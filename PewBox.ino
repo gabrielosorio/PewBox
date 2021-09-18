@@ -4,14 +4,14 @@ This is a library for our Monochrome OLEDs based on SSD1305 drivers
   Pick one up today in the adafruit shop!
   ------> https://www.adafruit.com/products/2675
 
-These displays use SPI or I2C to communicate, 3-5 pins are required to  
+These displays use SPI or I2C to communicate, 3-5 pins are required to
 interface
 
-Adafruit invests time and resources providing this open source code, 
-please support Adafruit and open-source hardware by purchasing 
+Adafruit invests time and resources providing this open source code,
+please support Adafruit and open-source hardware by purchasing
 products from Adafruit!
 
-Written by Limor Fried/Ladyada  for Adafruit Industries.  
+Written by Limor Fried/Ladyada  for Adafruit Industries.
 BSD license, check license.txt for more information
 All text above, and the splash screen below must be included in any redistribution
 *********************************************************************/
@@ -59,8 +59,8 @@ Adafruit_SSD1305 display(128, 64, &SPI, OLED_DC, OLED_RESET, OLED_CS, 1000000UL)
 #define DELTAY 2
 
 
-#define LOGO16_GLCD_HEIGHT 16 
-#define LOGO16_GLCD_WIDTH  16 
+#define LOGO16_GLCD_HEIGHT 16
+#define LOGO16_GLCD_WIDTH  16
 static const unsigned char PROGMEM logo16_glcd_bmp[] =
 { B00000000, B11000000,
   B00000001, B11000000,
@@ -80,7 +80,7 @@ static const unsigned char PROGMEM logo16_glcd_bmp[] =
   B00000000, B00110000 };
 
 
-void setup()   {                
+void setup() {
   Serial.begin(9600);
   // Make sure serial is online before proceeding
   // while (! Serial) delay(100);
@@ -129,7 +129,7 @@ void loop() {
   } else {
     display.println("x");
   }
-  
+
   // draw a single pixel
   display.drawPixel(encoderValueX, encoderValueY, WHITE);
   display.display();
@@ -160,7 +160,7 @@ void readEncoder() {
 
     if (axisChangeToggled) {
       // Move the Y Axis
-      
+
       // Both CLK and DT are HIGH when rotating counterclockwise
       if (encoderCurrentCLK == digitalRead(ENCODER_INPUT_DT)) {
         // Counterclockwise
@@ -174,7 +174,7 @@ void readEncoder() {
       Serial.println(encoderValueY);
     } else {
       // Move the X Axis
-      
+
       // Both CLK and DT are HIGH when rotating counterclockwise
       if (encoderCurrentCLK == digitalRead(ENCODER_INPUT_DT)) {
         // Counterclockwise
@@ -195,13 +195,13 @@ void readEncoder() {
 void testdrawbitmap(const uint8_t *bitmap, uint8_t w, uint8_t h) {
   uint8_t icons[NUMFLAKES][3];
   randomSeed(666);     // whatever seed
- 
+
   // initialize
   for (uint8_t f=0; f< NUMFLAKES; f++) {
     icons[f][XPOS] = random(display.width());
     icons[f][YPOS] = 0;
     icons[f][DELTAY] = random(5) + 1;
-    
+
     Serial.print("x: ");
     Serial.print(icons[f][XPOS], DEC);
     Serial.print(" y: ");
@@ -217,7 +217,7 @@ void testdrawbitmap(const uint8_t *bitmap, uint8_t w, uint8_t h) {
     }
     display.display();
     delay(20);
-    
+
     // then erase it + move it
     for (uint8_t f=0; f< NUMFLAKES; f++) {
       display.drawBitmap(icons[f][XPOS], icons[f][YPOS],  logo16_glcd_bmp, w, h, BLACK);
@@ -245,7 +245,7 @@ void testdrawchar(void) {
     display.write(i);
     if ((i > 0) && (i % 21 == 0))
       display.println();
-  }    
+  }
   display.display();
 }
 
@@ -303,7 +303,7 @@ void testfillroundrect(void) {
     display.display();
   }
 }
-   
+
 void testdrawrect(void) {
   for (uint8_t i=0; i<display.height()/2; i+=2) {
     display.drawRect(i, i, display.width()-2*i, display.height()-2*i, WHITE);
@@ -311,7 +311,7 @@ void testdrawrect(void) {
   }
 }
 
-void testdrawline() {  
+void testdrawline() {
   for (uint8_t i=0; i<display.width(); i+=4) {
     display.drawLine(0, 0, i, display.height()-1, WHITE);
     display.display();
@@ -321,7 +321,7 @@ void testdrawline() {
     display.display();
   }
   delay(250);
-  
+
   display.clearDisplay();
   for (uint8_t i=0; i<display.width(); i+=4) {
     display.drawLine(0, display.height()-1, i, 0, WHITE);
@@ -332,7 +332,7 @@ void testdrawline() {
     display.display();
   }
   delay(250);
-  
+
   display.clearDisplay();
   for (int8_t i=display.width()-1; i>=0; i-=4) {
     display.drawLine(display.width()-1, display.height()-1, i, 0, WHITE);
@@ -350,7 +350,7 @@ void testdrawline() {
     display.display();
   }
   for (uint8_t i=0; i<display.width(); i+=4) {
-    display.drawLine(display.width()-1, 0, i, display.height()-1, WHITE); 
+    display.drawLine(display.width()-1, 0, i, display.height()-1, WHITE);
     display.display();
   }
   delay(250);
