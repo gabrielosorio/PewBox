@@ -25,12 +25,14 @@ All text above, and the splash screen below must be included in any redistributi
 #define ENCODER_INPUT_CLK 2
 #define ENCODER_INPUT_DT 3
 #define ENCODER_INPUT_SW 4
-int encoderValueX = 64; // Horizontal Center
-int encoderValueY = 32; // Vertical Center
+int encoderValue = 0;
+int encoderValueMin = 0; // Don't go negative
+int encoderValueMax = 2; // Max 3 items
 int encoderCurrentCLK;
 int encoderPreviousCLK;
 int encoderCurrentSW;
 int encoderPreviousSW;
+bool encoderToggled = false;
 
 // Used for software SPI
 #define OLED_CLK 13
@@ -79,7 +81,6 @@ static const unsigned char PROGMEM logo16_glcd_bmp[] =
   B01110000, B01110000,
   B00000000, B00110000 };
 
-
 void setup() {
   Serial.begin(9600);
   // Make sure serial is online before proceeding
@@ -110,30 +111,52 @@ void setup() {
   display.println("PewBox");
   display.setTextSize(1);
   display.setTextColor(BLACK, WHITE); // 'inverted' text
-  display.println("v0.1");
+  display.println("v0.2");
   display.display();
   delay(1000);
   display.clearDisplay();
 }
 
-bool axisChangeToggled = false;
+uint8_t activeMenuItemIndex = 0;
 
 void loop() {
   readEncoder();
 
-  display.setCursor(0, 0);
-  display.setTextSize(2);
-  display.setTextColor(WHITE);
-  if (axisChangeToggled) {
-    display.println("y");
-  } else {
-    display.println("x");
-  }
+  // Read selected meenu item from encoder
+  activeMenuItemIndex = encoderValue;
+  renderMenu();
 
-  // draw a single pixel
-  display.drawPixel(encoderValueX, encoderValueY, WHITE);
   display.display();
   display.clearDisplay();
+}
+
+void renderMenu() {
+  char *menuItems[] = {
+    "Foo                 ",
+    "Far                 ",
+    "Few                 "
+  };
+
+  display.setCursor(0, 0);
+  display.setTextSize(1);
+
+  display.setTextColor(WHITE);
+
+  for (uint8_t i=0; i < sizeof(menuItems) / sizeof(menuItems[0]); i++) {
+    // Highlight item if selected
+    highlightSelectedMenuItem(i);
+
+    display.println(menuItems[i]);
+  }
+}
+
+void highlightSelectedMenuItem(uint8_t renderingMenuItemIndex) {
+  // If we're rendering the currently selected menu item, highlight it
+  if (renderingMenuItemIndex == activeMenuItemIndex) {
+    display.setTextColor(BLACK, WHITE); // 'inverted' text
+  } else {
+    display.setTextColor(WHITE);
+  }
 }
 
 void readEncoder() {
@@ -144,7 +167,7 @@ void readEncoder() {
   if (encoderCurrentSW != encoderPreviousSW) {
     if (encoderCurrentSW == LOW) {
       Serial.println("Encoder Pressed");
-      axisChangeToggled = !axisChangeToggled;
+      encoderToggled = !encoderToggled;
     }
 
     if (encoderCurrentSW == HIGH) {
@@ -156,37 +179,19 @@ void readEncoder() {
 
   // If the CLK changed, then the encoder moved
   if (encoderCurrentCLK != encoderPreviousCLK) {
-
-
-    if (axisChangeToggled) {
-      // Move the Y Axis
-
-      // Both CLK and DT are HIGH when rotating counterclockwise
-      if (encoderCurrentCLK == digitalRead(ENCODER_INPUT_DT)) {
-        // Counterclockwise
-        encoderValueY--;
-      } else {
-        // Clockwise
-        encoderValueY++;
+    // Both CLK and DT are HIGH when rotating counterclockwise
+    if (encoderCurrentCLK == digitalRead(ENCODER_INPUT_DT)) { // Counterclockwise
+      if (encoderValue > encoderValueMin) {
+        encoderValue--;
       }
-
-      Serial.print("Encoder Value Y: ");
-      Serial.println(encoderValueY);
-    } else {
-      // Move the X Axis
-
-      // Both CLK and DT are HIGH when rotating counterclockwise
-      if (encoderCurrentCLK == digitalRead(ENCODER_INPUT_DT)) {
-        // Counterclockwise
-        encoderValueX--;
-      } else {
-        // Clockwise
-        encoderValueX++;
+    } else { // Clockwise
+      if (encoderValue < encoderValueMax) {
+        encoderValue++;
       }
-
-      Serial.print("Encoder Value X: ");
-      Serial.println(encoderValueX);
     }
+
+    Serial.print("Encoder Value: ");
+    Serial.println(encoderValue);
 
     encoderPreviousCLK = encoderCurrentCLK;
   }
