@@ -86,7 +86,7 @@ void setup() {
   // while (! Serial) delay(100);
   Serial.println("SSD1305 OLED test");
 
-  if ( ! display.begin(0x3C) ) {
+  if (!display.begin(0x3C)) {
      Serial.println("Unable to initialize OLED");
      while (1) yield();
   }
@@ -197,7 +197,7 @@ void testdrawbitmap(const uint8_t *bitmap, uint8_t w, uint8_t h) {
   randomSeed(666);     // whatever seed
 
   // initialize
-  for (uint8_t f=0; f< NUMFLAKES; f++) {
+  for (uint8_t f=0; f<NUMFLAKES; f++) {
     icons[f][XPOS] = random(display.width());
     icons[f][YPOS] = 0;
     icons[f][DELTAY] = random(5) + 1;
@@ -212,14 +212,14 @@ void testdrawbitmap(const uint8_t *bitmap, uint8_t w, uint8_t h) {
 
   while (1) {
     // draw each icon
-    for (uint8_t f=0; f< NUMFLAKES; f++) {
+    for (uint8_t f=0; f<NUMFLAKES; f++) {
       display.drawBitmap(icons[f][XPOS], icons[f][YPOS], logo16_glcd_bmp, w, h, WHITE);
     }
     display.display();
     delay(20);
 
     // then erase it + move it
-    for (uint8_t f=0; f< NUMFLAKES; f++) {
+    for (uint8_t f=0; f<NUMFLAKES; f++) {
       display.drawBitmap(icons[f][XPOS], icons[f][YPOS],  logo16_glcd_bmp, w, h, BLACK);
       // move it
       icons[f][YPOS] += icons[f][DELTAY];
@@ -240,7 +240,7 @@ void testdrawchar(void) {
   display.setTextColor(WHITE);
   display.setCursor(0,0);
 
-  for (uint8_t i=0; i < 168; i++) {
+  for (uint8_t i=0; i<168; i++) {
     if (i == '\n') continue;
     display.write(i);
     if ((i > 0) && (i % 21 == 0))
