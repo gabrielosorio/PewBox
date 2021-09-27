@@ -60,7 +60,6 @@ Adafruit_SSD1305 display(128, 64, &SPI, OLED_DC, OLED_RESET, OLED_CS, 1000000UL)
 #define YPOS 1
 #define DELTAY 2
 
-
 #define LOGO16_GLCD_HEIGHT 16
 #define LOGO16_GLCD_WIDTH  16
 static const unsigned char PROGMEM logo16_glcd_bmp[] =
@@ -84,7 +83,7 @@ static const unsigned char PROGMEM logo16_glcd_bmp[] =
 void setup() {
   Serial.begin(9600);
   // Make sure serial is online before proceeding
-  // while (! Serial) delay(100);
+  while (! Serial) delay(100);
   Serial.println("SSD1305 OLED test");
 
   if (!display.begin(0x3C)) {
@@ -119,6 +118,15 @@ void setup() {
 
 uint8_t activeMenuItemIndex = 0;
 
+struct valueMenuItem {
+  char *label;
+  uint8_t value;
+};
+
+int menuSize = 3; // 3 items (one blank) TODO: Review what's going on
+valueMenuItem menuItems[menuSize];
+
+
 void loop() {
   readEncoder();
 
@@ -131,26 +139,52 @@ void loop() {
 }
 
 void renderMenu() {
-  char *menuItems[] = {
-    "Foo                 ",
-    "Far                 ",
-    "Few                 "
-  };
+  menuItems[0].label = "Pew";
+  menuItems[0].value = 1;
+
+  menuItems[1].label = "Mew";
+  menuItems[1].value = 2;
+
+  menuItems[2].label = "Zew";
+  menuItems[2].value = 3;
 
   display.setCursor(0, 0);
   display.setTextSize(1);
 
-  display.setTextColor(WHITE);
+  for (uint8_t i = 0; i < menuSize; i++) {
+    display.setTextColor(WHITE);
 
-  for (uint8_t i=0; i < sizeof(menuItems) / sizeof(menuItems[0]); i++) {
     // Highlight item if selected
-    highlightSelectedMenuItem(i);
+    highlightSelectedMenuItemLabel(i);
 
-    display.println(menuItems[i]);
+    display.print(menuItems[i].label);
+    display.print(": "); // Spacer
+
+    highlightSelectedMenuItemValue(i);
+    display.println(menuItems[i].value);
   }
 }
 
-void highlightSelectedMenuItem(uint8_t renderingMenuItemIndex) {
+void highlightSelectedMenuItemLabel(uint8_t renderingMenuItemIndex) {
+  // If we've stepped into the values of an item, skip
+  if (encoderToggled) {
+    return;
+  }
+
+  // If we're rendering the currently selected menu item, highlight it
+  if (renderingMenuItemIndex == activeMenuItemIndex) {
+    display.setTextColor(BLACK, WHITE); // 'inverted' text
+  } else {
+    display.setTextColor(WHITE);
+  }
+}
+
+void highlightSelectedMenuItemValue(uint8_t renderingMenuItemIndex) {
+  // If we have not stepped into the values of an item, skip
+  if (!encoderToggled) {
+    return;
+  }
+
   // If we're rendering the currently selected menu item, highlight it
   if (renderingMenuItemIndex == activeMenuItemIndex) {
     display.setTextColor(BLACK, WHITE); // 'inverted' text
@@ -184,10 +218,14 @@ void readEncoder() {
       if (encoderValue > encoderValueMin) {
         encoderValue--;
       }
+
+      clockwiseCallback();
     } else { // Clockwise
       if (encoderValue < encoderValueMax) {
         encoderValue++;
       }
+
+      counterClockwiseCallback();
     }
 
     Serial.print("Encoder Value: ");
