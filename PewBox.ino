@@ -75,8 +75,8 @@ void setup() {
 void loop() {
   readEncoderSwitch();
   readEncoderRotation(
-    *activeMenuValueClockwiseCallback,
-    *activeMenuValueCounterclockwiseCallback
+    *menuControlClockwiseCallback,
+    *menuControlCounterclockwiseCallback
   );
 
   // Read selected meenu item from encoder
@@ -174,23 +174,9 @@ void readEncoderRotation(void (*clockwiseCallback)(), void (*counterclockwiseCal
 
   // Both CLK and DT are HIGH when rotating counterclockwise
   if (encoderCurrentCLK == digitalRead(ENCODER_INPUT_DT)) { // Counterclockwise
-    // If we've stepped into the values of an item, let the callback handle it
-    if (encoderToggled) {
-        counterclockwiseCallback();
-    } else { // Otherwise keep scrolling through the menu list
-      if (encoderValue > encoderValueMin) {
-        encoderValue--; // Scroll to the previous menu item
-      }
-    }
+    counterclockwiseCallback();
   } else { // Clockwise
-    // If we've stepped into the values of an item, let the callback handle it
-    if (encoderToggled) {
-      clockwiseCallback();
-    } else { // Otherwise keep scrolling through the menu list
-     if (encoderValue < encoderValueMax) {
-        encoderValue++; // Scroll to the next menu item
-      }
-    }
+    clockwiseCallback();
   }
 
   Serial.print("Encoder Value: ");
@@ -199,18 +185,30 @@ void readEncoderRotation(void (*clockwiseCallback)(), void (*counterclockwiseCal
   encoderPreviousCLK = encoderCurrentCLK;
 }
 
-// Operation to perform on each encoder increment
+// The operation to be performed on each clockwise encoder increment
 // This allows the encoder action to be contextual,
 // depending on which callback you pass
-void activeMenuValueClockwiseCallback() {
-  Serial.println("Clockwise Callback!");
-  menuItems[activeMenuItemIndex].value++;
+void menuControlClockwiseCallback() {
+  // If we've stepped into the values of an item, increase the current value
+  if (encoderToggled) {
+    menuItems[activeMenuItemIndex].value++;
+  } else { // Otherwise keep scrolling through the menu list
+   if (encoderValue < encoderValueMax) {
+      encoderValue++; // Scroll to the next menu item
+    }
+  }
 }
 
-// Operation to perform on each encoder increment
+// The operation to be performed on each conterclockwise encoder increment
 // This allows the encoder action to be contextual,
 // depending on which callback you pass
-void activeMenuValueCounterclockwiseCallback() {
-  Serial.println("Clockwise Callback!");
-  menuItems[activeMenuItemIndex].value--;
+void menuControlCounterclockwiseCallback() {
+  // If we've stepped into the values of an item, decrease the current value
+  if (encoderToggled) {
+    menuItems[activeMenuItemIndex].value--;
+  } else { // Otherwise keep scrolling through the menu list
+    if (encoderValue > encoderValueMin) {
+      encoderValue--; // Scroll to the previous menu item
+    }
+  }
 }
