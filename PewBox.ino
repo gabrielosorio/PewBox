@@ -110,10 +110,13 @@ void setup() {
   display.println("PewBox");
   display.setTextSize(1);
   display.setTextColor(BLACK, WHITE); // 'inverted' text
-  display.println("v0.2");
+  display.println("v0.3");
   display.display();
   delay(1000);
   display.clearDisplay();
+
+  // Menu Setup
+  initMenu();
 }
 
 uint8_t activeMenuItemIndex = 0;
@@ -123,12 +126,15 @@ struct valueMenuItem {
   uint8_t value;
 };
 
-int menuSize = 3; // 3 items (one blank) TODO: Review what's going on
-valueMenuItem menuItems[menuSize];
-
+#define MENU_SIZE 3 // 3 items (one blank) - must be a constant/macro to be used to define an array
+valueMenuItem menuItems[MENU_SIZE];
 
 void loop() {
-  readEncoder();
+  readEncoderSwitch();
+  readEncoderRotation(
+    *activeMenuValueClockwiseCallback,
+    *activeMenuValueCounterclockwiseCallback
+  );
 
   // Read selected meenu item from encoder
   activeMenuItemIndex = encoderValue;
@@ -138,7 +144,7 @@ void loop() {
   display.clearDisplay();
 }
 
-void renderMenu() {
+void initMenu() {
   menuItems[0].label = "Pew";
   menuItems[0].value = 1;
 
@@ -147,11 +153,13 @@ void renderMenu() {
 
   menuItems[2].label = "Zew";
   menuItems[2].value = 3;
+}
 
+void renderMenu() {
   display.setCursor(0, 0);
   display.setTextSize(1);
 
-  for (uint8_t i = 0; i < menuSize; i++) {
+  for (uint8_t i = 0; i < MENU_SIZE; i++) {
     display.setTextColor(WHITE);
 
     // Highlight item if selected
@@ -193,46 +201,75 @@ void highlightSelectedMenuItemValue(uint8_t renderingMenuItemIndex) {
   }
 }
 
-void readEncoder() {
+void readEncoderSwitch() {
   encoderCurrentSW = digitalRead(ENCODER_INPUT_SW);
+
+  // If the SW didn't change, then the encoder wasn't pressed or released. Do nothing.
+  if (encoderCurrentSW == encoderPreviousSW) {
+    return;
+  }
+
+  if (encoderCurrentSW == LOW) {
+    Serial.println("Encoder Pressed");
+    encoderToggled = !encoderToggled;
+  }
+
+  if (encoderCurrentSW == HIGH) {
+    Serial.println("Encoder Released");
+  }
+
+  encoderPreviousSW = encoderCurrentSW;
+}
+
+void readEncoderRotation(void (*clockwiseCallback)(), void (*counterclockwiseCallback)()) {
   encoderCurrentCLK = digitalRead(ENCODER_INPUT_CLK);
 
-  // If the SW changed, then the encoder was pressed or released
-  if (encoderCurrentSW != encoderPreviousSW) {
-    if (encoderCurrentSW == LOW) {
-      Serial.println("Encoder Pressed");
-      encoderToggled = !encoderToggled;
-    }
-
-    if (encoderCurrentSW == HIGH) {
-      Serial.println("Encoder Released");
-    }
-
-    encoderPreviousSW = encoderCurrentSW;
+  // If the CLK didn't change, then the encoder didn't move. Do nothing.
+  if (encoderCurrentCLK == encoderPreviousCLK) {
+    return;
   }
 
-  // If the CLK changed, then the encoder moved
-  if (encoderCurrentCLK != encoderPreviousCLK) {
-    // Both CLK and DT are HIGH when rotating counterclockwise
-    if (encoderCurrentCLK == digitalRead(ENCODER_INPUT_DT)) { // Counterclockwise
+  // Both CLK and DT are HIGH when rotating counterclockwise
+  if (encoderCurrentCLK == digitalRead(ENCODER_INPUT_DT)) { // Counterclockwise
+    // If we've stepped into the values of an item, let the callback handle it
+    if (encoderToggled) {
+        counterclockwiseCallback();
+    } else { // Otherwise keep scrolling through the menu list
       if (encoderValue > encoderValueMin) {
-        encoderValue--;
+        encoderValue--; // Scroll to the previous menu item
       }
-
-      clockwiseCallback();
-    } else { // Clockwise
-      if (encoderValue < encoderValueMax) {
-        encoderValue++;
-      }
-
-      counterClockwiseCallback();
     }
-
-    Serial.print("Encoder Value: ");
-    Serial.println(encoderValue);
-
-    encoderPreviousCLK = encoderCurrentCLK;
+  } else { // Clockwise
+    // If we've stepped into the values of an item, let the callback handle it
+    if (encoderToggled) {
+      clockwiseCallback();
+    } else { // Otherwise keep scrolling through the menu list
+     if (encoderValue < encoderValueMax) {
+        encoderValue++; // Scroll to the next menu item
+      }
+    }
   }
+
+  Serial.print("Encoder Value: ");
+  Serial.println(encoderValue);
+
+  encoderPreviousCLK = encoderCurrentCLK;
+}
+
+// Operation to perform on each encoder increment
+// This allows the encoder action to be contextual,
+// depending on which callback you pass
+void activeMenuValueClockwiseCallback() {
+  Serial.println("Clockwise Callback!");
+  menuItems[activeMenuItemIndex].value++;
+}
+
+// Operation to perform on each encoder increment
+// This allows the encoder action to be contextual,
+// depending on which callback you pass
+void activeMenuValueCounterclockwiseCallback() {
+  Serial.println("Clockwise Callback!");
+  menuItems[activeMenuItemIndex].value--;
 }
 
 void testdrawbitmap(const uint8_t *bitmap, uint8_t w, uint8_t h) {
