@@ -33,6 +33,16 @@ struct valueMenuItem {
 #define MENU_SIZE 3 // 3 items (one blank) - must be a constant/macro to be used to define an array
 valueMenuItem menuItems[MENU_SIZE];
 
+// Teensy Audio Library
+#include <Audio.h>
+#include <Wire.h>
+
+// GUItool: begin automatically generated code
+AudioSynthWaveform       waveform1;      //xy=336,339
+AudioOutputAnalog        dac1;           //xy=681,353
+AudioConnection          patchCord1(waveform1, dac1);
+// GUItool: end automatically generated code
+
 void setup() {
   Serial.begin(9600);
   // Make sure serial is online before proceeding
@@ -70,6 +80,12 @@ void setup() {
 
   // Menu Setup
   initMenu();
+
+  // Audio
+  AudioMemory(20);
+  waveform1.frequency(440);
+  waveform1.amplitude(1.0);
+  waveform1.begin(WAVEFORM_SAWTOOTH);
 }
 
 void loop() {
