@@ -101,6 +101,11 @@ void loop() {
 
   display.display();
   display.clearDisplay();
+
+  // Audio
+  AudioNoInterrupts();
+  waveform1.frequency(menuItems[0].value);
+  AudioInterrupts();
 }
 
 void initMenu() {
