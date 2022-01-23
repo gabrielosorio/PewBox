@@ -73,7 +73,7 @@ void setup() {
   display.println("PewBox");
   display.setTextSize(1);
   display.setTextColor(BLACK, WHITE); // 'inverted' text
-  display.println("v0.3");
+  display.println("v0.4");
   display.display();
   delay(1000);
   display.clearDisplay();
