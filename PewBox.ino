@@ -82,7 +82,7 @@ void setup() {
   initMenu();
 
   // Audio
-  AudioMemory(20);
+  AudioMemory(20); // Required - Reduce amount when needed quota is determined
   waveform1.frequency(440);
   waveform1.amplitude(1.0);
   waveform1.begin(WAVEFORM_SAWTOOTH);
