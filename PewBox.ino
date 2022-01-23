@@ -109,7 +109,7 @@ void loop() {
 }
 
 void initMenu() {
-  menuItems[0].label = "Pew";
+  menuItems[0].label = "Oscillator Freq";
   menuItems[0].value = 1;
 
   menuItems[1].label = "Mew";
