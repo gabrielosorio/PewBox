@@ -28,6 +28,8 @@ uint8_t activeMenuItemIndex = 0;
 struct valueMenuItem {
   char *label;
   uint8_t value;
+  uint8_t minValue;
+  uint8_t maxValue;
 };
 
 #define MENU_SIZE 3 // 3 items (one blank) - must be a constant/macro to be used to define an array
@@ -47,7 +49,6 @@ void setup() {
   Serial.begin(9600);
   // Make sure serial is online before proceeding
   while (! Serial) delay(100);
-  Serial.println("SSD1305 OLED test");
 
   if (!display.begin(0x3C)) {
      Serial.println("Unable to initialize OLED");
@@ -105,18 +106,25 @@ void loop() {
   // Audio
   AudioNoInterrupts();
   waveform1.frequency(menuItems[0].value);
+  waveform1.amplitude(menuItems[1].value);
   AudioInterrupts();
 }
 
 void initMenu() {
   menuItems[0].label = "Oscillator Freq";
   menuItems[0].value = 1;
+  menuItems[0].minValue = 0;
+  menuItems[0].maxValue = 255;
 
-  menuItems[1].label = "Mew";
-  menuItems[1].value = 2;
+  menuItems[1].label = "Oscillator On/Off";
+  menuItems[1].value = 1;
+  menuItems[1].minValue = 0;
+  menuItems[1].maxValue = 1;
 
   menuItems[2].label = "Zew";
-  menuItems[2].value = 3;
+  menuItems[2].value = 0;
+  menuItems[2].minValue = 0;
+  menuItems[2].maxValue = 1;
 }
 
 void renderMenu() {
@@ -200,8 +208,8 @@ void readEncoderRotation(void (*clockwiseCallback)(), void (*counterclockwiseCal
     clockwiseCallback();
   }
 
-  Serial.print("Encoder Value: ");
-  Serial.println(encoderValue);
+//  Serial.print("Encoder Value: ");
+//  Serial.println(encoderValue);
 
   encoderPreviousCLK = encoderCurrentCLK;
 }
@@ -212,7 +220,9 @@ void readEncoderRotation(void (*clockwiseCallback)(), void (*counterclockwiseCal
 void menuControlClockwiseCallback() {
   // If we've stepped into the values of an item, increase the current value
   if (encoderToggled) {
-    menuItems[activeMenuItemIndex].value++;
+    if (menuItems[activeMenuItemIndex].value < menuItems[activeMenuItemIndex].maxValue) {
+      menuItems[activeMenuItemIndex].value++;
+    }
   } else { // Otherwise keep scrolling through the menu list
    if (encoderValue < encoderValueMax) {
       encoderValue++; // Scroll to the next menu item
@@ -226,7 +236,9 @@ void menuControlClockwiseCallback() {
 void menuControlCounterclockwiseCallback() {
   // If we've stepped into the values of an item, decrease the current value
   if (encoderToggled) {
-    menuItems[activeMenuItemIndex].value--;
+    if (menuItems[activeMenuItemIndex].value > menuItems[activeMenuItemIndex].minValue) {
+      menuItems[activeMenuItemIndex].value--;
+    }
   } else { // Otherwise keep scrolling through the menu list
     if (encoderValue > encoderValueMin) {
       encoderValue--; // Scroll to the previous menu item
