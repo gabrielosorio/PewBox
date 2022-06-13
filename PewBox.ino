@@ -92,8 +92,8 @@ void setup() {
 void loop() {
   readEncoderSwitch();
   readEncoderRotation(
-    *menuControlClockwiseCallback,
-    *menuControlCounterclockwiseCallback
+    *menuControlClockwiseHandler,
+    *menuControlCounterclockwiseHandler
   );
 
   // Read selected meenu item from encoder
@@ -193,7 +193,7 @@ void readEncoderSwitch() {
   encoderPreviousSW = encoderCurrentSW;
 }
 
-void readEncoderRotation(void (*clockwiseCallback)(), void (*counterclockwiseCallback)()) {
+void readEncoderRotation(void (*clockwiseHandler)(), void (*counterclockwiseHandler)()) {
   encoderCurrentCLK = digitalRead(ENCODER_INPUT_CLK);
 
   // If the CLK didn't change, then the encoder didn't move. Do nothing.
@@ -212,16 +212,16 @@ void readEncoderRotation(void (*clockwiseCallback)(), void (*counterclockwiseCal
 
   // Both CLK and DT are HIGH when rotating counterclockwise
   if (encoderCurrentCLK == digitalRead(ENCODER_INPUT_DT)) { // Counterclockwise
-    counterclockwiseCallback();
+    counterclockwiseHandler();
   } else { // Clockwise
-    clockwiseCallback();
+    clockwiseHandler();
   }
 }
 
 // The operation to be performed on each clockwise encoder increment
 // This allows the encoder action to be contextual,
-// depending on which callback you pass
-void menuControlClockwiseCallback() {
+// depending on which handler you pass
+void menuControlClockwiseHandler() {
   // If we've stepped into the values of an item, increase the current value
   if (encoderToggled) {
     if (menuItems[activeMenuItemIndex].value < menuItems[activeMenuItemIndex].maxValue) {
@@ -236,8 +236,8 @@ void menuControlClockwiseCallback() {
 
 // The operation to be performed on each conterclockwise encoder increment
 // This allows the encoder action to be contextual,
-// depending on which callback you pass
-void menuControlCounterclockwiseCallback() {
+// depending on which handler you pass
+void menuControlCounterclockwiseHandler() {
   // If we've stepped into the values of an item, decrease the current value
   if (encoderToggled) {
     if (menuItems[activeMenuItemIndex].value > menuItems[activeMenuItemIndex].minValue) {
