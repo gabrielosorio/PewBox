@@ -112,12 +112,12 @@ void loop() {
 
 void initMenu() {
   menuItems[0].label = "Oscillator Freq";
-  menuItems[0].value = 1;
+  menuItems[0].value = 195;
   menuItems[0].minValue = 0;
   menuItems[0].maxValue = 255;
 
   menuItems[1].label = "Oscillator On/Off";
-  menuItems[1].value = 1;
+  menuItems[1].value = 0;
   menuItems[1].minValue = 0;
   menuItems[1].maxValue = 1;
 
