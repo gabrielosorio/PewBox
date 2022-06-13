@@ -201,6 +201,15 @@ void readEncoderRotation(void (*clockwiseCallback)(), void (*counterclockwiseCal
     return;
   }
 
+  encoderPreviousCLK = encoderCurrentCLK;
+
+  // Extremely basic debounce.
+  // Current encoder only latches on 1 and reads 0 when not latched.
+  // Only compute rotation when the encoder latches.
+  if (encoderCurrentCLK == 0) {
+    return;
+  }
+
   // Both CLK and DT are HIGH when rotating counterclockwise
   if (encoderCurrentCLK == digitalRead(ENCODER_INPUT_DT)) { // Counterclockwise
     counterclockwiseCallback();
@@ -211,7 +220,6 @@ void readEncoderRotation(void (*clockwiseCallback)(), void (*counterclockwiseCal
 //  Serial.print("Encoder Value: ");
 //  Serial.println(encoderValue);
 
-  encoderPreviousCLK = encoderCurrentCLK;
 }
 
 // The operation to be performed on each clockwise encoder increment
