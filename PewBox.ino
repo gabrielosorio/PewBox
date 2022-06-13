@@ -40,10 +40,13 @@ valueMenuItem menuItems[MENU_SIZE];
 #include <Wire.h>
 
 // GUItool: begin automatically generated code
-AudioSynthWaveform       waveform1;      //xy=336,339
-AudioOutputAnalog        dac1;           //xy=681,353
-AudioConnection          patchCord1(waveform1, dac1);
+AudioSynthWaveform       waveform1;      //xy=396,277
+AudioFilterLadder        filter1;        //xy=574,315
+AudioOutputAnalog        dac1;           //xy=752,315
+AudioConnection          patchCord1(waveform1, 0, filter1, 0);
+AudioConnection          patchCord2(filter1, dac1);
 // GUItool: end automatically generated code
+
 
 void setup() {
   Serial.begin(9600);
@@ -107,6 +110,9 @@ void loop() {
   AudioNoInterrupts();
   waveform1.frequency(menuItems[0].value);
   waveform1.amplitude(menuItems[1].value);
+  filter1.resonance(0.55);
+  filter1.frequency(11800);
+  filter1.octaveControl(2.6); // up 2.6 octaves (4850 Hz) & down 2.6 octaves (132 Hz)
   AudioInterrupts();
 }
 
