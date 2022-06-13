@@ -47,7 +47,6 @@ AudioConnection          patchCord1(waveform1, 0, filter1, 0);
 AudioConnection          patchCord2(filter1, dac1);
 // GUItool: end automatically generated code
 
-
 void setup() {
   Serial.begin(9600);
   // Make sure serial is online before proceeding
