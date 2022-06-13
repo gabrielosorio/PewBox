@@ -111,7 +111,7 @@ void loop() {
   waveform1.frequency(menuItems[0].value);
   waveform1.amplitude(menuItems[1].value);
   filter1.resonance(0.55);
-  filter1.frequency(11800);
+  filter1.frequency(menuItems[2].value * 100); // Multiplying frequency for ease of use
   filter1.octaveControl(2.6); // up 2.6 octaves (4850 Hz) & down 2.6 octaves (132 Hz)
   AudioInterrupts();
 }
@@ -127,10 +127,10 @@ void initMenu() {
   menuItems[1].minValue = 0;
   menuItems[1].maxValue = 1;
 
-  menuItems[2].label = "Zew";
-  menuItems[2].value = 0;
+  menuItems[2].label = "Filter Freq (MHz)";
+  menuItems[2].value = 45;
   menuItems[2].minValue = 0;
-  menuItems[2].maxValue = 1;
+  menuItems[2].maxValue = 255;
 }
 
 void renderMenu() {
