@@ -216,10 +216,6 @@ void readEncoderRotation(void (*clockwiseCallback)(), void (*counterclockwiseCal
   } else { // Clockwise
     clockwiseCallback();
   }
-
-//  Serial.print("Encoder Value: ");
-//  Serial.println(encoderValue);
-
 }
 
 // The operation to be performed on each clockwise encoder increment
