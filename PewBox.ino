@@ -9,19 +9,6 @@
 // hardware SPI - use 7Mhz (7000000UL) or lower because the screen is rated for 4MHz, or it will remain blank!
 Adafruit_SSD1305 display(128, 64, &SPI, OLED_DC, OLED_RESET, OLED_CS, 1000000UL);
 
-// Rotary Encoder
-#define ENCODER_INPUT_CLK 2
-#define ENCODER_INPUT_DT 3
-#define ENCODER_INPUT_SW 4
-int encoderValue = 0;
-int encoderValueMin = 0; // Don't go negative
-int encoderValueMax = 2; // Max 3 items
-int encoderCurrentCLK;
-int encoderPreviousCLK;
-int encoderCurrentSW;
-int encoderPreviousSW;
-bool encoderToggled = false;
-
 // Main Menu
 uint8_t activeMenuItemIndex = 0;
 
@@ -32,19 +19,34 @@ struct valueMenuItem {
   uint8_t maxValue;
 };
 
-#define MENU_SIZE 3 // 3 items (one blank) - must be a constant/macro to be used to define an array
+#define MENU_SIZE 4 // 4 items (one blank) - must be a constant/macro to be used to define an array
 valueMenuItem menuItems[MENU_SIZE];
+
+// Rotary Encoder
+#define ENCODER_INPUT_CLK 2
+#define ENCODER_INPUT_DT 3
+#define ENCODER_INPUT_SW 4
+int encoderValue = 0;
+int encoderValueMin = 0; // Don't go negative
+int encoderValueMax = MENU_SIZE - 1; // Menu size without the trailing blank item
+int encoderCurrentCLK;
+int encoderPreviousCLK;
+int encoderCurrentSW;
+int encoderPreviousSW;
+bool encoderToggled = false;
 
 // Teensy Audio Library
 #include <Audio.h>
 #include <Wire.h>
 
 // GUItool: begin automatically generated code
+AudioSynthWaveform       filter_lfo;      //xy=391,336
 AudioSynthWaveform       waveform1;      //xy=396,277
 AudioFilterLadder        filter1;        //xy=574,315
 AudioOutputAnalog        dac1;           //xy=752,315
-AudioConnection          patchCord1(waveform1, 0, filter1, 0);
-AudioConnection          patchCord2(filter1, dac1);
+AudioConnection          patchCord1(filter_lfo, 0, filter1, 1);
+AudioConnection          patchCord2(waveform1, 0, filter1, 0);
+AudioConnection          patchCord3(filter1, dac1);
 // GUItool: end automatically generated code
 
 void setup() {
@@ -89,6 +91,13 @@ void setup() {
   waveform1.frequency(440);
   waveform1.amplitude(1.0);
   waveform1.begin(WAVEFORM_SAWTOOTH);
+
+  filter1.resonance(0.55);
+  filter1.octaveControl(2.6); // up 2.6 octaves (4850 Hz) & down 2.6 octaves (132 Hz)
+
+  filter_lfo.frequency(5);
+  filter_lfo.amplitude(1.0);
+  filter_lfo.begin(WAVEFORM_TRIANGLE);
 }
 
 void loop() {
@@ -109,9 +118,8 @@ void loop() {
   AudioNoInterrupts();
   waveform1.frequency(menuItems[0].value);
   waveform1.amplitude(menuItems[1].value);
-  filter1.resonance(0.55);
   filter1.frequency(menuItems[2].value * 100); // Multiplying frequency for ease of use
-  filter1.octaveControl(2.6); // up 2.6 octaves (4850 Hz) & down 2.6 octaves (132 Hz)
+  filter_lfo.frequency(menuItems[3].value);
   AudioInterrupts();
 }
 
@@ -130,6 +138,11 @@ void initMenu() {
   menuItems[2].value = 45;
   menuItems[2].minValue = 0;
   menuItems[2].maxValue = 255;
+
+  menuItems[3].label = "Filter LFO Freq";
+  menuItems[3].value = 5;
+  menuItems[3].minValue = 0;
+  menuItems[3].maxValue = 255;
 }
 
 void renderMenu() {
