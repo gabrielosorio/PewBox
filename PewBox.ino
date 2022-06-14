@@ -19,7 +19,7 @@ struct valueMenuItem {
   uint8_t maxValue;
 };
 
-#define MENU_SIZE 4 // 1-based count (one blank) - must be a constant/macro to be used to define an array
+#define MENU_SIZE 5 // 1-based count (one blank) - must be a constant/macro to be used to define an array
 valueMenuItem menuItems[MENU_SIZE];
 
 // Rotary Encoder
@@ -120,6 +120,7 @@ void loop() {
   waveform1.amplitude(menuItems[1].value);
   filter1.frequency(menuItems[2].value * 100); // Multiplying frequency for ease of use
   filter_lfo.frequency(menuItems[3].value);
+  filter_lfo.amplitude(menuItems[4].value);
   AudioInterrupts();
 }
 
@@ -143,6 +144,11 @@ void initMenu() {
   menuItems[3].value = 5;
   menuItems[3].minValue = 0;
   menuItems[3].maxValue = 255;
+
+  menuItems[4].label = "Filter LFO On/Off";
+  menuItems[4].value = 0;
+  menuItems[4].minValue = 0;
+  menuItems[4].maxValue = 1;
 }
 
 void renderMenu() {
