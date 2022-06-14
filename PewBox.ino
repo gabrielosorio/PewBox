@@ -19,7 +19,7 @@ struct valueMenuItem {
   uint8_t maxValue;
 };
 
-#define MENU_SIZE 4 // 4 items (one blank) - must be a constant/macro to be used to define an array
+#define MENU_SIZE 4 // 1-based count (one blank) - must be a constant/macro to be used to define an array
 valueMenuItem menuItems[MENU_SIZE];
 
 // Rotary Encoder
@@ -28,7 +28,7 @@ valueMenuItem menuItems[MENU_SIZE];
 #define ENCODER_INPUT_SW 4
 int encoderValue = 0;
 int encoderValueMin = 0; // Don't go negative
-int encoderValueMax = MENU_SIZE - 1; // Menu size without the trailing blank item
+int encoderValueMax = MENU_SIZE - 1; // 0-based count, as opposed to the 1-based MENU_SIZE
 int encoderCurrentCLK;
 int encoderPreviousCLK;
 int encoderCurrentSW;
