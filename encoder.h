@@ -1,5 +1,41 @@
 // Rotary Encoder
-// Pins defined in PewBox.ino
+// Still tightly coupled to the menu and with
+// very little encapsulation
+
+// # Pins:
+// Defined in PewBox.ino
+// #define ENCODER_INPUT_CLK 2
+// #define ENCODER_INPUT_DT 3
+// #define ENCODER_INPUT_SW 4
+
+// # Control variables:
+// encoderToggled
+// encoderValue
+// encoderValueMin
+// encoderValueMax
+
+// # Setup functions:
+// initRotaryEncoder();
+
+// # Loop functions:
+//
+// Keep encoder button in sync
+// readEncoderSwitch();
+//
+// Pass handler functions to be invoked every time
+// the encoder latches in each respective direction
+// readEncoderRotation(
+//   *menuControlClockwiseHandler,
+//   *menuControlCounterclockwiseHandler
+// );
+
+// Handlers:
+// Invoked every time the encoder latches in each
+// respective direction
+//
+// void menuControlCounterclockwiseHandler()
+// void menuControlClockwiseHandler()
+
 int encoderValue = 0;
 int encoderValueMin = 0; // Don't go negative
 int encoderValueMax = MENU_SIZE - 1; // 0-based count, as opposed to the 1-based MENU_SIZE
