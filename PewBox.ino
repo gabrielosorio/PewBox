@@ -26,14 +26,8 @@ valueMenuItem menuItems[MENU_SIZE];
 #define ENCODER_INPUT_CLK 2
 #define ENCODER_INPUT_DT 3
 #define ENCODER_INPUT_SW 4
-int encoderValue = 0;
-int encoderValueMin = 0; // Don't go negative
-int encoderValueMax = MENU_SIZE - 1; // 0-based count, as opposed to the 1-based MENU_SIZE
-int encoderCurrentCLK;
-int encoderPreviousCLK;
-int encoderCurrentSW;
-int encoderPreviousSW;
-bool encoderToggled = false;
+
+#include "encoder.h"
 
 // Teensy Audio Library
 #include <Audio.h>
@@ -59,12 +53,7 @@ void setup() {
      while (1) yield();
   }
 
-  // Init Rotary Encoder
-  pinMode(ENCODER_INPUT_CLK, INPUT);
-  pinMode(ENCODER_INPUT_DT, INPUT);
-  pinMode(ENCODER_INPUT_SW, INPUT);
-  encoderPreviousCLK = digitalRead(ENCODER_INPUT_CLK); // Initial CLK state
-  encoderPreviousSW = digitalRead(ENCODER_INPUT_SW); // Initial SW state
+  initRotaryEncoder();
 
   // Init Done
   display.display(); // show splashscreen
@@ -194,51 +183,6 @@ void highlightSelectedMenuItemValue(uint8_t renderingMenuItemIndex) {
     display.setTextColor(BLACK, WHITE); // 'inverted' text
   } else {
     display.setTextColor(WHITE);
-  }
-}
-
-void readEncoderSwitch() {
-  encoderCurrentSW = digitalRead(ENCODER_INPUT_SW);
-
-  // If the SW didn't change, then the encoder wasn't pressed or released. Do nothing.
-  if (encoderCurrentSW == encoderPreviousSW) {
-    return;
-  }
-
-  if (encoderCurrentSW == LOW) {
-    Serial.println("Encoder Pressed");
-    encoderToggled = !encoderToggled;
-  }
-
-  if (encoderCurrentSW == HIGH) {
-    Serial.println("Encoder Released");
-  }
-
-  encoderPreviousSW = encoderCurrentSW;
-}
-
-void readEncoderRotation(void (*clockwiseHandler)(), void (*counterclockwiseHandler)()) {
-  encoderCurrentCLK = digitalRead(ENCODER_INPUT_CLK);
-
-  // If the CLK didn't change, then the encoder didn't move. Do nothing.
-  if (encoderCurrentCLK == encoderPreviousCLK) {
-    return;
-  }
-
-  encoderPreviousCLK = encoderCurrentCLK;
-
-  // Extremely basic debounce.
-  // Current encoder only latches on 1 and reads 0 when not latched.
-  // Only compute rotation when the encoder latches.
-  if (encoderCurrentCLK == 0) {
-    return;
-  }
-
-  // Both CLK and DT are HIGH when rotating counterclockwise
-  if (encoderCurrentCLK == digitalRead(ENCODER_INPUT_DT)) { // Counterclockwise
-    counterclockwiseHandler();
-  } else { // Clockwise
-    clockwiseHandler();
   }
 }
 
