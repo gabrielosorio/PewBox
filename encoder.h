@@ -10,9 +10,6 @@
 
 // # Control variables:
 // encoderToggled
-// encoderValue
-// encoderValueMin
-// encoderValueMax
 
 // # Setup functions:
 // initRotaryEncoder();
@@ -36,9 +33,6 @@
 // void menuControlCounterclockwiseHandler()
 // void menuControlClockwiseHandler()
 
-int encoderValue = 0;
-int encoderValueMin = 0; // Don't go negative
-int encoderValueMax = MENU_SIZE - 1; // 0-based count, as opposed to the 1-based MENU_SIZE
 int encoderCurrentCLK;
 int encoderPreviousCLK;
 int encoderCurrentSW;

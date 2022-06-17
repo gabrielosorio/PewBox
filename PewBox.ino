@@ -22,10 +22,15 @@ struct valueMenuItem {
 #define MENU_SIZE 5 // 1-based count (one blank) - must be a constant/macro to be used to define an array
 valueMenuItem menuItems[MENU_SIZE];
 
-// Rotary Encoder
+// Rotary Encoder Pins
 #define ENCODER_INPUT_CLK 2
 #define ENCODER_INPUT_DT 3
 #define ENCODER_INPUT_SW 4
+
+// Rotary Encoder local control values
+int encoderValue = 0;
+int encoderValueMin = 0; // Don't go negative
+int encoderValueMax = MENU_SIZE - 1; // 0-based count, as opposed to the 1-based MENU_SIZE
 
 #include "encoder.h"
 
