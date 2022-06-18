@@ -1,3 +1,21 @@
+// Main Menu
+// Still tightly coupled to the encoder controls
+// very little encapsulation and very order dependent
+
+// # Constants:
+// Defined in PewBox.ino
+// #define MENU_SIZE 5
+
+// # Control variables:
+// activeMenuItemIndex
+// menuItems
+
+// # Setup functions:
+// initMenu();
+
+// # Loop functions:
+// renderMenu(index); // index to be set as active menu item
+
 uint8_t activeMenuItemIndex = 0;
 
 struct valueMenuItem {

@@ -1,6 +1,6 @@
 // Rotary Encoder
-// Still tightly coupled to the menu and with
-// very little encapsulation
+// Still tightly coupled to the menu
+// very little encapsulation and very order dependent
 
 // # Pins:
 // Defined in PewBox.ino
