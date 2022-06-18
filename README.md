@@ -1,8 +1,14 @@
 # PewBox
 
+![DSCF0709-small](https://user-images.githubusercontent.com/1136262/174444239-a10259ce-7e7f-48be-9863-ccbf2bd6e71a.jpg)
+
 ## Overview
 
 Firmware for a Teensy-based musical thingamajig made from the ground up.
+
+![DSCF0728](https://user-images.githubusercontent.com/1136262/174444248-f159da2a-8561-46fb-9b1b-06cd3d48ebbf.JPG)
+
+![DSCF0725](https://user-images.githubusercontent.com/1136262/174444252-a2ef6696-1c33-4e25-b98e-ddfdd0d93711.JPG)
 
 ## Hardware
 - Teensy 3.6
