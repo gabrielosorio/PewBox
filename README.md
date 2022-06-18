@@ -13,7 +13,9 @@ Firmware for a Teensy-based musical thingamajig made from the ground up.
 - Teensy 3.6
 - SPI Encoder
 - SSD1305 OLED Display (+ controller IC)
-- Piezo (optional)
+- Piezo (or direct out to amp)
+
+## Prototype
 
 ![DSCF0728](https://user-images.githubusercontent.com/1136262/174444248-f159da2a-8561-46fb-9b1b-06cd3d48ebbf.JPG)
 
