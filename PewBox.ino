@@ -59,10 +59,10 @@ void setup() {
   displayBootScreen();
 
   // Menu Setup
-  initMenu();
+  // initMenu();
 
   // Audio Setup
-  initAudioComponents();
+  // initAudioComponents();
 }
 
 void loop() {
@@ -73,13 +73,13 @@ void loop() {
   );
 
   // Read selected meenu item from encoder
-  renderMenu(encoderValue);
+  // renderMenu(encoderValue);
 
   display.display();
   display.clearDisplay();
 
   // Audio
-  renderAudioComponentsFromMenu();
+  // renderAudioComponentsFromMenu();
 }
 
 void displayBootScreen() {
