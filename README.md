@@ -17,6 +17,8 @@ Firmware for a Teensy-based musical thingamajig made from the ground up.
 
 ## Prototype
 
+A box in the most liberal sense.
+
 ![DSCF0728](https://user-images.githubusercontent.com/1136262/174444248-f159da2a-8561-46fb-9b1b-06cd3d48ebbf.JPG)
 
 ![DSCF0725](https://user-images.githubusercontent.com/1136262/174444252-a2ef6696-1c33-4e25-b98e-ddfdd0d93711.JPG)
