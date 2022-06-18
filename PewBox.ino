@@ -71,18 +71,8 @@ void setup() {
   // Menu Setup
   initMenu();
 
-  // Audio
-  AudioMemory(20); // Required - Reduce amount when needed quota is determined
-  waveform1.frequency(440);
-  waveform1.amplitude(1.0);
-  waveform1.begin(WAVEFORM_SAWTOOTH);
-
-  filter1.resonance(0.55);
-  filter1.octaveControl(2.6); // up 2.6 octaves (4850 Hz) & down 2.6 octaves (132 Hz)
-
-  filter_lfo.frequency(5);
-  filter_lfo.amplitude(1.0);
-  filter_lfo.begin(WAVEFORM_TRIANGLE);
+  // Audio Setup
+  initAudioComponents();
 }
 
 void loop() {
@@ -99,6 +89,24 @@ void loop() {
   display.clearDisplay();
 
   // Audio
+  renderAudioComponentsFromMenu();
+}
+
+void initAudioComponents() {
+  AudioMemory(20); // Required - Reduce amount when needed quota is determined
+  waveform1.frequency(440);
+  waveform1.amplitude(1.0);
+  waveform1.begin(WAVEFORM_SAWTOOTH);
+
+  filter1.resonance(0.55);
+  filter1.octaveControl(2.6); // up 2.6 octaves (4850 Hz) & down 2.6 octaves (132 Hz)
+
+  filter_lfo.frequency(5);
+  filter_lfo.amplitude(1.0);
+  filter_lfo.begin(WAVEFORM_TRIANGLE);
+}
+
+void renderAudioComponentsFromMenu() {
   AudioNoInterrupts();
   waveform1.frequency(menuItems[0].value);
   waveform1.amplitude(menuItems[1].value);
