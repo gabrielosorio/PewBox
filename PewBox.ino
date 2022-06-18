@@ -63,6 +63,9 @@ void setup() {
 
   // Audio Setup
   // initAudioComponents();
+
+  drawGridFromBitmap();
+  display.display();
 }
 
 void loop() {
@@ -75,11 +78,56 @@ void loop() {
   // Read selected meenu item from encoder
   // renderMenu(encoderValue);
 
-  display.display();
-  display.clearDisplay();
+  // display.display();
+  // display.clearDisplay();
 
   // Audio
   // renderAudioComponentsFromMenu();
+}
+
+void drawGridFromBitmap() { // Technically bitmap or just byte array?
+  uint8_t gridRows = 2;
+  uint8_t gridColumns = 8;
+  uint8_t cellSize = 10;
+
+  // TODO: Pass through to method – pointer?
+  unsigned char bitmap[gridRows] = {
+    B00100001,
+    B10001000
+  }; // Bits are traversed back-to-front
+
+  // Go through the rows
+  for  (uint8_t j = 0; j < gridRows; j++) {
+    uint8_t cellOffsetY = j * cellSize;
+
+    // Go through the columns in the row
+    for (uint8_t i = 0; i < gridColumns; i++) {
+      uint8_t cellOffsetX = i * cellSize;
+
+      byte currentBit = bitRead(bitmap[j], i);
+
+      if (currentBit == 1) {
+        drawCrossedCell(cellOffsetX, cellOffsetY, cellSize, cellSize);
+      } else {
+        drawEmptyCell(cellOffsetX, cellOffsetY, cellSize, cellSize);
+      }
+    }
+  }
+}
+
+void drawEmptyCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight) {
+  display.drawRect(x, y, cellWidth, cellHeight, WHITE);
+}
+
+void drawCrossedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight) {
+  // Draw border
+  display.drawRect(x, y, cellWidth, cellHeight, WHITE);
+
+  // Draw cross
+  uint8_t xEnd = x + cellWidth - 1; // Review what's up with pixel offset
+  uint8_t yEnd = y + cellHeight - 1; // Review what's up with pixel offset
+  display.drawLine(x, y, xEnd, yEnd, WHITE);
+  display.drawLine(x, yEnd, xEnd, y, WHITE);
 }
 
 void displayBootScreen() {
