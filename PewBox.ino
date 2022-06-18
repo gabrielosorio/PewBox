@@ -56,17 +56,7 @@ void setup() {
   delay(1000);
   display.clearDisplay();   // clears the screen and buffer
 
-  // Display Boot Text
-  display.setTextSize(2);
-  display.setTextColor(WHITE);
-  display.setCursor(0,0);
-  display.println("PewBox");
-  display.setTextSize(1);
-  display.setTextColor(BLACK, WHITE); // 'inverted' text
-  display.println("v0.6");
-  display.display();
-  delay(1000);
-  display.clearDisplay();
+  displayBootScreen();
 
   // Menu Setup
   initMenu();
@@ -90,6 +80,19 @@ void loop() {
 
   // Audio
   renderAudioComponentsFromMenu();
+}
+
+void displayBootScreen() {
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.setCursor(0,0);
+  display.println("PewBox");
+  display.setTextSize(1);
+  display.setTextColor(BLACK, WHITE); // 'inverted' text
+  display.println("v0.6");
+  display.display();
+  delay(1000);
+  display.clearDisplay();
 }
 
 void initAudioComponents() {
