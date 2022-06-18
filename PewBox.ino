@@ -10,17 +10,7 @@
 Adafruit_SSD1305 display(128, 64, &SPI, OLED_DC, OLED_RESET, OLED_CS, 1000000UL);
 
 // Main Menu
-uint8_t activeMenuItemIndex = 0;
-
-struct valueMenuItem {
-  char *label;
-  uint8_t value;
-  uint8_t minValue;
-  uint8_t maxValue;
-};
-
 #define MENU_SIZE 5 // 1-based count (one blank) - must be a constant/macro to be used to define an array
-valueMenuItem menuItems[MENU_SIZE];
 
 // Rotary Encoder Pins
 #define ENCODER_INPUT_CLK 2
@@ -33,6 +23,7 @@ int encoderValueMin = 0; // Don't go negative
 int encoderValueMax = MENU_SIZE - 1; // 0-based count, as opposed to the 1-based MENU_SIZE
 
 #include "encoder.h"
+#include "menu.h";
 
 // Teensy Audio Library
 #include <Audio.h>
@@ -102,8 +93,7 @@ void loop() {
   );
 
   // Read selected meenu item from encoder
-  activeMenuItemIndex = encoderValue;
-  renderMenu();
+  renderMenu(encoderValue);
 
   display.display();
   display.clearDisplay();
@@ -116,79 +106,6 @@ void loop() {
   filter_lfo.frequency(menuItems[3].value);
   filter_lfo.amplitude(menuItems[4].value);
   AudioInterrupts();
-}
-
-void initMenu() {
-  menuItems[0].label = "Oscillator Freq";
-  menuItems[0].value = 195;
-  menuItems[0].minValue = 0;
-  menuItems[0].maxValue = 255;
-
-  menuItems[1].label = "Oscillator On/Off";
-  menuItems[1].value = 0;
-  menuItems[1].minValue = 0;
-  menuItems[1].maxValue = 1;
-
-  menuItems[2].label = "Filter Freq (MHz)";
-  menuItems[2].value = 45;
-  menuItems[2].minValue = 0;
-  menuItems[2].maxValue = 255;
-
-  menuItems[3].label = "Filter LFO Freq";
-  menuItems[3].value = 5;
-  menuItems[3].minValue = 0;
-  menuItems[3].maxValue = 255;
-
-  menuItems[4].label = "Filter LFO On/Off";
-  menuItems[4].value = 0;
-  menuItems[4].minValue = 0;
-  menuItems[4].maxValue = 1;
-}
-
-void renderMenu() {
-  display.setCursor(0, 0);
-  display.setTextSize(1);
-
-  for (uint8_t i = 0; i < MENU_SIZE; i++) {
-    display.setTextColor(WHITE);
-
-    // Highlight item if selected
-    highlightSelectedMenuItemLabel(i);
-
-    display.print(menuItems[i].label);
-    display.print(": "); // Spacer
-
-    highlightSelectedMenuItemValue(i);
-    display.println(menuItems[i].value);
-  }
-}
-
-void highlightSelectedMenuItemLabel(uint8_t renderingMenuItemIndex) {
-  // If we've stepped into the values of an item, skip
-  if (encoderToggled) {
-    return;
-  }
-
-  // If we're rendering the currently selected menu item, highlight it
-  if (renderingMenuItemIndex == activeMenuItemIndex) {
-    display.setTextColor(BLACK, WHITE); // 'inverted' text
-  } else {
-    display.setTextColor(WHITE);
-  }
-}
-
-void highlightSelectedMenuItemValue(uint8_t renderingMenuItemIndex) {
-  // If we have not stepped into the values of an item, skip
-  if (!encoderToggled) {
-    return;
-  }
-
-  // If we're rendering the currently selected menu item, highlight it
-  if (renderingMenuItemIndex == activeMenuItemIndex) {
-    display.setTextColor(BLACK, WHITE); // 'inverted' text
-  } else {
-    display.setTextColor(WHITE);
-  }
 }
 
 // The operation to be performed on each clockwise encoder increment
