@@ -113,15 +113,15 @@ void drawGridFromBitmap() { // Technically bitmap or just byte array?
       byte currentBit = bitRead(bitmap[j], i);
 
       if (currentBit == 1) {
-        drawCrossedCell(cellOffsetX, cellOffsetY, cellSize, cellSize);
+        drawMarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize);
       } else {
-        drawEmptyCell(cellOffsetX, cellOffsetY, cellSize, cellSize, true);
+        drawUnmarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, true);
       }
     }
   }
 }
 
-void drawEmptyCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight, bool isActiveStep) {
+void drawUnmarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight, bool isActiveStep) {
   if (isActiveStep) {
     // Draw filled rectangle
     display.fillRect(x, y, cellWidth, cellHeight, WHITE);
@@ -131,7 +131,7 @@ void drawEmptyCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight, 
   }
 }
 
-void drawCrossedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight) {
+void drawMarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight) {
   // Draw border
   display.drawRect(x, y, cellWidth, cellHeight, WHITE);
 
