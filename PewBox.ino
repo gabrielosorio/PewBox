@@ -96,6 +96,12 @@ void drawGridFromBitmap() { // Technically bitmap or just byte array?
     B10001000
   }; // Bits are traversed back-to-front
 
+  // TODO: Control layer (showing cursor position)
+  // Only one active at a time, can infer from step number
+
+  // TODO: Playback layer (showing active step position)
+  // Only one active at a time, can infer from step number
+
   // Go through the rows
   for  (uint8_t j = 0; j < gridRows; j++) {
     uint8_t cellOffsetY = j * cellSize;
@@ -109,14 +115,20 @@ void drawGridFromBitmap() { // Technically bitmap or just byte array?
       if (currentBit == 1) {
         drawCrossedCell(cellOffsetX, cellOffsetY, cellSize, cellSize);
       } else {
-        drawEmptyCell(cellOffsetX, cellOffsetY, cellSize, cellSize);
+        drawEmptyCell(cellOffsetX, cellOffsetY, cellSize, cellSize, true);
       }
     }
   }
 }
 
-void drawEmptyCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight) {
-  display.drawRect(x, y, cellWidth, cellHeight, WHITE);
+void drawEmptyCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight, bool isActiveStep) {
+  if (isActiveStep) {
+    // Draw filled rectangle
+    display.fillRect(x, y, cellWidth, cellHeight, WHITE);
+  } else {
+    // Draw rectangle without fill
+    display.drawRect(x, y, cellWidth, cellHeight, WHITE);
+  }
 }
 
 void drawCrossedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight) {
