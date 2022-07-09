@@ -126,7 +126,7 @@ void drawUnmarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeigh
     // Draw filled rectangle
     display.fillRect(x, y, cellWidth, cellHeight, WHITE);
   } else {
-    // Draw rectangle without fill
+    // Draw rectangle border without fill
     display.drawRect(x, y, cellWidth, cellHeight, WHITE);
   }
 }
