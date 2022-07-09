@@ -113,7 +113,7 @@ void drawGridFromBitmap() { // Technically bitmap or just byte array?
       byte currentBit = bitRead(bitmap[j], i);
 
       if (currentBit == 1) {
-        drawMarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize);
+        drawMarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, true);
       } else {
         drawUnmarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, true);
       }
@@ -131,15 +131,21 @@ void drawUnmarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeigh
   }
 }
 
-void drawMarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight) {
-  // Draw border
-  display.drawRect(x, y, cellWidth, cellHeight, WHITE);
+void drawMarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight, bool isActiveStep) {
+  // Draw Rectangle
+  if (isActiveStep) {
+    // Draw filled rectangle
+    display.fillRect(x, y, cellWidth, cellHeight, WHITE);
+  } else {
+    // Draw rectangle border without fill
+    display.drawRect(x, y, cellWidth, cellHeight, WHITE);
+  }
 
   // Draw cross
   uint8_t xEnd = x + cellWidth - 1; // Review what's up with pixel offset
   uint8_t yEnd = y + cellHeight - 1; // Review what's up with pixel offset
-  display.drawLine(x, y, xEnd, yEnd, WHITE);
-  display.drawLine(x, yEnd, xEnd, y, WHITE);
+  display.drawLine(x, y, xEnd, yEnd, isActiveStep ? BLACK : WHITE);
+  display.drawLine(x, yEnd, xEnd, y, isActiveStep ? BLACK : WHITE);
 }
 
 void displayBootScreen() {
