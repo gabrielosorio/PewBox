@@ -67,7 +67,7 @@ void setup() {
   // display.display();
 }
 
-uint8_t stepTicker = 0;
+// uint8_t stepTicker = 0;
 
 void loop() {
   readEncoderSwitch();
@@ -86,19 +86,19 @@ void loop() {
   // renderAudioComponentsFromMenu();
 
   // Dummy Step Cycle
-  drawGridFromBitmap(stepTicker);
+  // drawGridFromBitmap(stepTicker);
 
-  if (stepTicker == 15) {
-    stepTicker = 0;
-  } else {
-    stepTicker++;
-  }
+  // if (stepTicker == 15) {
+  //   stepTicker = 0;
+  // } else {
+  //   stepTicker++;
+  // }
 
-  display.display();
+  // display.display();
 
-  delay(300);
+  // delay(300);
 
-  display.clearDisplay();
+  // display.clearDisplay();
 }
 
 void drawGridFromBitmap(uint8_t activeStepIndex) { // Technically bitmap or just byte array?
