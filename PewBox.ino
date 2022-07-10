@@ -142,6 +142,7 @@ void drawMarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight,
   // Draw rectangle border
   display.drawRect(x, y, cellWidth, cellHeight, isActiveStep ? BLACK : WHITE);
 
+
   // Draw cross
   uint8_t xEnd = x + cellWidth - 1; // Review what's up with pixel offset
   uint8_t yEnd = y + cellHeight - 1; // Review what's up with pixel offset
