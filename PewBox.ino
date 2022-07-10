@@ -122,24 +122,25 @@ void drawGridFromBitmap() { // Technically bitmap or just byte array?
 }
 
 void drawUnmarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight, bool isActiveStep) {
+  // Fill rectangle if the step is currently active
   if (isActiveStep) {
     // Draw filled rectangle
     display.fillRect(x, y, cellWidth, cellHeight, WHITE);
-  } else {
-    // Draw rectangle border without fill
-    display.drawRect(x, y, cellWidth, cellHeight, WHITE);
   }
+
+  // Draw rectangle border
+  display.drawRect(x, y, cellWidth, cellHeight, isActiveStep ? BLACK : WHITE);
 }
 
 void drawMarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight, bool isActiveStep) {
-  // Draw Rectangle
+  // Fill rectangle if the step is currently active
   if (isActiveStep) {
     // Draw filled rectangle
     display.fillRect(x, y, cellWidth, cellHeight, WHITE);
-  } else {
-    // Draw rectangle border without fill
-    display.drawRect(x, y, cellWidth, cellHeight, WHITE);
   }
+
+  // Draw rectangle border
+  display.drawRect(x, y, cellWidth, cellHeight, isActiveStep ? BLACK : WHITE);
 
   // Draw cross
   uint8_t xEnd = x + cellWidth - 1; // Review what's up with pixel offset
