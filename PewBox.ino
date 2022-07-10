@@ -64,7 +64,7 @@ void setup() {
   // Audio Setup
   // initAudioComponents();
 
-  drawGridFromBitmap();
+  drawGridFromBitmap(1);
   display.display();
 }
 
@@ -85,7 +85,7 @@ void loop() {
   // renderAudioComponentsFromMenu();
 }
 
-void drawGridFromBitmap() { // Technically bitmap or just byte array?
+void drawGridFromBitmap(uint8_t activeStepIndex) { // Technically bitmap or just byte array?
   uint8_t gridRows = 2;
   uint8_t gridColumns = 8;
   uint8_t cellSize = 10;
@@ -103,19 +103,22 @@ void drawGridFromBitmap() { // Technically bitmap or just byte array?
   // Only one active at a time, can infer from step number
 
   // Go through the rows
-  for  (uint8_t j = 0; j < gridRows; j++) {
-    uint8_t cellOffsetY = j * cellSize;
+  for  (uint8_t row = 0; row < gridRows; row++) {
+    uint8_t cellOffsetY = row * cellSize;
 
     // Go through the columns in the row
-    for (uint8_t i = 0; i < gridColumns; i++) {
-      uint8_t cellOffsetX = i * cellSize;
+    for (uint8_t column = 0; column < gridColumns; column++) {
+      uint8_t cellOffsetX = column * cellSize;
 
-      byte currentBit = bitRead(bitmap[j], i);
+      byte currentBit = bitRead(bitmap[row], column);
+
+      uint8_t currentStepIndex = gridColumns * row + column;
+      bool isActiveStep = activeStepIndex == currentStepIndex;
 
       if (currentBit == 1) {
-        drawMarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, true);
+        drawMarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, isActiveStep);
       } else {
-        drawUnmarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, true);
+        drawUnmarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, isActiveStep);
       }
     }
   }
