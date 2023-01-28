@@ -25,6 +25,8 @@ int encoderValueMax = MENU_SIZE - 1; // 0-based count, as opposed to the 1-based
 #include "encoder.h"
 #include "menu.h";
 
+#define LED 6
+
 // Teensy Audio Library
 #include <Audio.h>
 #include <Wire.h>
@@ -58,6 +60,8 @@ void setup() {
 
   displayBootScreen();
 
+  pinMode(LED, OUTPUT);
+
   // Menu Setup
   // initMenu();
 
@@ -67,7 +71,7 @@ void setup() {
   // display.display();
 }
 
-// uint8_t stepTicker = 0;
+uint8_t stepTicker = 0;
 
 void loop() {
   readEncoderSwitch();
@@ -86,19 +90,19 @@ void loop() {
   // renderAudioComponentsFromMenu();
 
   // Dummy Step Cycle
-  // drawGridFromBitmap(stepTicker);
+  drawGridFromBitmap(stepTicker);
 
-  // if (stepTicker == 15) {
-  //   stepTicker = 0;
-  // } else {
-  //   stepTicker++;
-  // }
+  if (stepTicker == 15) {
+    stepTicker = 0;
+  } else {
+    stepTicker++;
+  }
 
-  // display.display();
+  display.display();
 
-  // delay(300);
+  delay(300);
 
-  // display.clearDisplay();
+  display.clearDisplay();
 }
 
 void drawGridFromBitmap(uint8_t activeStepIndex) { // Technically bitmap or just byte array?
@@ -132,8 +136,16 @@ void drawGridFromBitmap(uint8_t activeStepIndex) { // Technically bitmap or just
       bool isActiveStep = activeStepIndex == currentStepIndex;
 
       if (currentBit == 1) {
+        if (isActiveStep) {
+          // Handle current step on
+          digitalWrite(LED, HIGH);
+        }
         drawMarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, isActiveStep);
       } else {
+        if (isActiveStep) {
+          // Handle current step off
+          digitalWrite(LED, LOW);
+        }
         drawUnmarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, isActiveStep);
       }
     }
