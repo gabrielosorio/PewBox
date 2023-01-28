@@ -137,19 +137,29 @@ void drawGridFromBitmap(uint8_t activeStepIndex) { // Technically bitmap or just
 
       if (currentBit == 1) {
         if (isActiveStep) {
-          // Handle current step on
-          digitalWrite(LED, HIGH);
+          handleCurrentStepOn();
         }
         drawMarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, isActiveStep);
       } else {
         if (isActiveStep) {
-          // Handle current step off
-          digitalWrite(LED, LOW);
+          handleCurrentStepOff();
         }
         drawUnmarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, isActiveStep);
       }
     }
   }
+}
+
+// Sequencer event stepping on an enabled trigger
+void handleCurrentStepOn() {
+  // Dummy output LED to simulate trigger
+  digitalWrite(LED, HIGH);
+}
+
+// Sequencer event stepping on a disabled trigger
+void handleCurrentStepOff() {
+  // Dummy output LED to simulate trigger
+  digitalWrite(LED, LOW);
 }
 
 void drawUnmarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight, bool isActiveStep) {
