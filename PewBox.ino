@@ -51,7 +51,7 @@ void setup() {
   }
 
   initRotaryEncoder();
-  
+
   initSequencer();
 
   // Init Done
