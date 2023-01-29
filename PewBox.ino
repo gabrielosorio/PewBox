@@ -89,8 +89,17 @@ void loop() {
   // Audio
   // renderAudioComponentsFromMenu();
 
+  uint8_t gridRows = 2;
+  uint8_t gridColumns = 8;
+
+  // TODO: Review passing by reference vs by pointer
+  unsigned char bitmap[gridRows] = {
+    B00100101,
+    B10001000
+  }; // Bits are traversed back-to-front
+
   // Dummy Step Cycle
-  drawGridFromBitmap(stepTicker);
+  drawGridFromBitmap(stepTicker, bitmap, gridRows, gridColumns);
 
   if (stepTicker == 15) {
     stepTicker = 0;
@@ -105,16 +114,8 @@ void loop() {
   display.clearDisplay();
 }
 
-void drawGridFromBitmap(uint8_t activeStepIndex) { // Technically bitmap or just byte array?
-  uint8_t gridRows = 2;
-  uint8_t gridColumns = 8;
+void drawGridFromBitmap(uint8_t activeStepIndex, uint8_t *bitmap, uint8_t gridRows, uint8_t gridColumns) { // Technically bitmap or just byte array?
   uint8_t cellSize = 10;
-
-  // TODO: Pass through to method – pointer?
-  unsigned char bitmap[gridRows] = {
-    B00100001,
-    B10001000
-  }; // Bits are traversed back-to-front
 
   // TODO: Control layer (showing cursor position)
   // Only one active at a time, can infer from step number
@@ -130,7 +131,7 @@ void drawGridFromBitmap(uint8_t activeStepIndex) { // Technically bitmap or just
     for (uint8_t column = 0; column < gridColumns; column++) {
       uint8_t cellOffsetX = column * cellSize;
 
-      byte currentBit = bitRead(bitmap[row], column);
+      byte currentBit = bitRead(bitmap[row], column); // needs to pass *bitmap if not already a pointer
 
       uint8_t currentStepIndex = gridColumns * row + column;
       bool isActiveStep = activeStepIndex == currentStepIndex;
@@ -182,7 +183,6 @@ void drawMarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight,
 
   // Draw rectangle border
   display.drawRect(x, y, cellWidth, cellHeight, isActiveStep ? BLACK : WHITE);
-
 
   // Draw cross
   uint8_t xEnd = x + cellWidth - 1; // Review what's up with pixel offset
