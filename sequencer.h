@@ -137,21 +137,25 @@ void drawGridFromBitmap(uint8_t activeStepIndex, uint8_t cursorIndex, uint8_t *b
   }
 }
 
+uint8_t sequencerTickPeriod = 1000;
+unsigned long currentTime = 0;
+
 // Main sequencer entry point
 // Put this in the run loop
 void renderSequencer() {
-  // Dummy Step Cycle
+  display.clearDisplay();
   drawGridFromBitmap(stepTicker, cursorIndex, bitmap, gridRows, gridColumns);
-
-  if (stepTicker == 15) {
-    stepTicker = 0;
-  } else {
-    stepTicker++;
-  }
-
   display.display();
 
-  delay(300);
+  // Delay using millis to avoid blocking UI between ticks
+  if (millis() >= currentTime + sequencerTickPeriod) {
+    currentTime += sequencerTickPeriod;
 
-  display.clearDisplay();
+    // Dummy Step Cycle
+    if (stepTicker == 15) {
+      stepTicker = 0;
+    } else {
+      stepTicker++;
+    }
+  }
 }
