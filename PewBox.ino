@@ -98,8 +98,10 @@ void loop() {
     B10001000
   }; // Bits are traversed back-to-front
 
+  uint8_t cursorIndex = 0;
+
   // Dummy Step Cycle
-  drawGridFromBitmap(stepTicker, bitmap, gridRows, gridColumns);
+  drawGridFromBitmap(stepTicker, cursorIndex, bitmap, gridRows, gridColumns);
 
   if (stepTicker == 15) {
     stepTicker = 0;
@@ -114,7 +116,7 @@ void loop() {
   display.clearDisplay();
 }
 
-void drawGridFromBitmap(uint8_t activeStepIndex, uint8_t *bitmap, uint8_t gridRows, uint8_t gridColumns) { // Technically bitmap or just byte array?
+void drawGridFromBitmap(uint8_t activeStepIndex, uint8_t cursorIndex, uint8_t *bitmap, uint8_t gridRows, uint8_t gridColumns) { // Technically bitmap or just byte array?
   uint8_t cellSize = 10;
 
   // TODO: Control layer (showing cursor position)
@@ -135,17 +137,18 @@ void drawGridFromBitmap(uint8_t activeStepIndex, uint8_t *bitmap, uint8_t gridRo
 
       uint8_t currentStepIndex = gridColumns * row + column;
       bool isActiveStep = activeStepIndex == currentStepIndex;
+      bool hasCursorOnStep = cursorIndex == currentStepIndex;
 
       if (currentBit == 1) {
         if (isActiveStep) {
           handleCurrentStepOn();
         }
-        drawMarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, isActiveStep);
+        drawMarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, isActiveStep, hasCursorOnStep);
       } else {
         if (isActiveStep) {
           handleCurrentStepOff();
         }
-        drawUnmarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, isActiveStep);
+        drawUnmarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, isActiveStep, hasCursorOnStep);
       }
     }
   }
@@ -163,7 +166,7 @@ void handleCurrentStepOff() {
   digitalWrite(LED, LOW);
 }
 
-void drawUnmarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight, bool isActiveStep) {
+void drawUnmarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight, bool isActiveStep, bool hasCursorOnStep) {
   // Fill rectangle if the step is currently active
   if (isActiveStep) {
     // Draw filled rectangle
@@ -172,9 +175,13 @@ void drawUnmarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeigh
 
   // Draw rectangle border
   display.drawRect(x, y, cellWidth, cellHeight, isActiveStep ? BLACK : WHITE);
+
+  if (hasCursorOnStep) {
+    drawCursor(x, y, cellWidth, cellHeight, isActiveStep);
+  }
 }
 
-void drawMarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight, bool isActiveStep) {
+void drawMarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight, bool isActiveStep, bool hasCursorOnStep) {
   // Fill rectangle if the step is currently active
   if (isActiveStep) {
     // Draw filled rectangle
@@ -189,6 +196,17 @@ void drawMarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight,
   uint8_t yEnd = y + cellHeight - 1; // Review what's up with pixel offset
   display.drawLine(x, y, xEnd, yEnd, isActiveStep ? BLACK : WHITE);
   display.drawLine(x, yEnd, xEnd, y, isActiveStep ? BLACK : WHITE);
+
+  if (hasCursorOnStep) {
+    drawCursor(x, y, cellWidth, cellHeight, isActiveStep);
+  }
+}
+
+void drawCursor(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight, bool isActiveStep) {
+  uint8_t cursorSize = 4;
+  uint8_t cursorX = x + cellWidth/2 - cursorSize/2;
+  uint8_t cursorY = y + cellHeight/2 - cursorSize/2;
+  display.fillRect(cursorX, cursorY, cursorSize, cursorSize, isActiveStep ? BLACK : WHITE);
 }
 
 void displayBootScreen() {
