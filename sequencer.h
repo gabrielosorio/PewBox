@@ -44,6 +44,22 @@ void sequencerControlCounterclockwiseHandler() {
   }
 }
 
+void flipBitmapBitAtCursor() {
+  // TODO: Simplify check per row
+
+  if (cursorIndex < 8) {
+    // If on first row
+    bitmap[0] ^= 1UL << cursorIndex; // Flip bit at cursorIndex
+  } else {
+    // If on second row
+    bitmap[1] ^= 1UL << cursorIndex - 8; // Flip bit at cursorIndex
+  }
+}
+
+void sequencerControlSwitchMomentaryHandler() {
+  flipBitmapBitAtCursor();
+}
+
 // Sequencer event stepping on an enabled trigger
 void handleCurrentStepOn() {
   // Dummy output LED to simulate trigger

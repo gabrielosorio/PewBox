@@ -71,7 +71,7 @@ void setup() {
 }
 
 void loop() {
-  // readEncoderSwitch();
+  readEncoderSwitch(*sequencerControlSwitchMomentaryHandler);
   // readEncoderRotation(
   //   *menuControlClockwiseHandler,
   //   *menuControlCounterclockwiseHandler);

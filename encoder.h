@@ -28,10 +28,11 @@
 
 // Handlers:
 // Invoked every time the encoder latches in each
-// respective direction
+// respective direction or the switch is clicked
 //
 // void menuControlCounterclockwiseHandler()
 // void menuControlClockwiseHandler()
+// void readEncoderSwitchMomentary()
 
 int encoderCurrentCLK;
 int encoderPreviousCLK;
@@ -48,7 +49,7 @@ void initRotaryEncoder() {
   encoderPreviousSW = digitalRead(ENCODER_INPUT_SW); // Initial SW state
 }
 
-void readEncoderSwitch() {
+void readEncoderSwitch(void (*encoderSwitchMomentaryHandler)()) {
   encoderCurrentSW = digitalRead(ENCODER_INPUT_SW);
 
   // If the SW didn't change, then the encoder wasn't pressed or released. Do nothing.
@@ -59,6 +60,8 @@ void readEncoderSwitch() {
   if (encoderCurrentSW == LOW) {
     Serial.println("Encoder Pressed");
     encoderToggled = !encoderToggled;
+    // Trigger a momentary handler if one is supplied
+    encoderSwitchMomentaryHandler();
   }
 
   if (encoderCurrentSW == HIGH) {
@@ -66,6 +69,21 @@ void readEncoderSwitch() {
   }
 
   encoderPreviousSW = encoderCurrentSW;
+}
+
+bool encoderMomentaryOn = false;
+
+// TODO: Make function argument optional
+void readEncoderSwitchMomentary(void (*encoderSwitchMomentaryHandler)()) {
+  // If the SW didn't change, then the encoder wasn't pressed or released. Do nothing.
+  if (encoderCurrentSW == encoderPreviousSW) {
+    return;
+  }
+
+  if (encoderCurrentSW == LOW) {
+    Serial.println("Encoder Pressed");
+    encoderSwitchMomentaryHandler();
+  }
 }
 
 void readEncoderRotation(void (*clockwiseHandler)(), void (*counterclockwiseHandler)()) {
