@@ -18,9 +18,30 @@
 #define LED 6
 
 uint8_t stepTicker = 0;
+uint8_t cursorIndex = 0;
+const uint8_t gridRows = 2;
+const uint8_t gridColumns = 8;
+
+// TODO: Review passing by reference vs by pointer
+unsigned char bitmap[gridRows] = {
+  B00100101,
+  B10001000
+}; // Bits are traversed back-to-front
 
 void initSequencer() {
   pinMode(LED, OUTPUT);
+}
+
+void sequencerControlClockwiseHandler() {
+  if (cursorIndex < gridRows * gridColumns - 1) {
+    cursorIndex++;
+  }
+}
+
+void sequencerControlCounterclockwiseHandler() {
+  if (cursorIndex > 0) {
+    cursorIndex--;
+  }
 }
 
 // Sequencer event stepping on an enabled trigger
@@ -119,17 +140,6 @@ void drawGridFromBitmap(uint8_t activeStepIndex, uint8_t cursorIndex, uint8_t *b
 // Main sequencer entry point
 // Put this in the run loop
 void renderSequencer() {
-  uint8_t gridRows = 2;
-  uint8_t gridColumns = 8;
-
-  // TODO: Review passing by reference vs by pointer
-  unsigned char bitmap[gridRows] = {
-    B00100101,
-    B10001000
-  };  // Bits are traversed back-to-front
-
-  uint8_t cursorIndex = 0;
-
   // Dummy Step Cycle
   drawGridFromBitmap(stepTicker, cursorIndex, bitmap, gridRows, gridColumns);
 

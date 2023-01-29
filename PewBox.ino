@@ -71,10 +71,18 @@ void setup() {
 }
 
 void loop() {
-  readEncoderSwitch();
+  // readEncoderSwitch();
+  // readEncoderRotation(
+  //   *menuControlClockwiseHandler,
+  //   *menuControlCounterclockwiseHandler);
+
+  // Sequencer-specific
+  // TODO: Move to swappable "app" object,
+  //       that can be selectable from the menu and
+  //       declares (overrides) their own event handlers
   readEncoderRotation(
-    *menuControlClockwiseHandler,
-    *menuControlCounterclockwiseHandler);
+    *sequencerControlClockwiseHandler,
+    *sequencerControlCounterclockwiseHandler);
 
   // Read selected meenu item from encoder
   // renderMenu(encoderValue);
