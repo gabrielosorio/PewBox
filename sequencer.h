@@ -150,13 +150,21 @@ void drawGridFromBitmap(uint8_t activeStepIndex, uint8_t cursorIndex, uint8_t *b
       uint8_t cellOffsetY = (gridColumns * row + column) / displayStepsPerRow * cellSize; // Offset 1 Y after 16 steps
       uint8_t cellOffsetX = ((gridColumns * row + column) % displayStepsPerRow) * cellSize; // Offset 1 X up until 16 steps
 
-      byte currentBit = bitRead(bitmap[row], column);  // needs to pass *bitmap if not already a pointer
+      byte currentlyRenderingBit = bitRead(bitmap[row], column);  // needs to pass *bitmap if not already a pointer
 
-      uint8_t currentStepIndex = gridColumns * row + column;
-      bool isActiveStep = activeStepIndex == currentStepIndex;
-      bool hasCursorOnStep = cursorIndex == currentStepIndex;
+      uint8_t currentlyRenderingStepIndex = gridColumns * row + column;
 
-      if (currentBit == 1) {
+      // activeStepIndex is the step the sequencer is on, goes from 0 to 15
+      // currentlyRenderingStepIndex is the step that is being drawn
+
+      // One track per visual row (determined by displayStepsPerRow), goes from 0 to 3
+      uint8_t currentTrack = (gridColumns * row + column) / displayStepsPerRow;
+
+      // Check if is active for every track in the column
+      bool isActiveStep = (currentlyRenderingStepIndex % displayStepsPerRow) == activeStepIndex;
+      bool hasCursorOnStep = cursorIndex == currentlyRenderingStepIndex;
+
+      if (currentlyRenderingBit == 1) {
         if (isActiveStep) {
           handleCurrentStepOn();
         }
@@ -186,7 +194,7 @@ void renderSequencer() {
     currentTime += sequencerTickPeriod;
 
     // Dummy Step Cycle
-    if (stepTicker == gridRows * gridColumns - 1) {
+    if (stepTicker == displayStepsPerRow - 1) {
       stepTicker = 0;
     } else {
       stepTicker++;
