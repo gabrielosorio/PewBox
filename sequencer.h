@@ -19,7 +19,7 @@
 
 uint8_t stepTicker = 0;
 uint8_t cursorIndex = 0;
-const uint8_t gridRows = 2;     // TODO: Rename to describe bitmap and abstract
+const uint8_t gridRows = 8;     // TODO: Rename to describe bitmap and abstract
 const uint8_t gridColumns = 8;  //       from how they're displayed
 const uint8_t displayStepsPerRow = 16;
 uint8_t cellSize = 7;
@@ -28,7 +28,13 @@ uint8_t borderWidth = 1;
 // TODO: Review passing by reference vs by pointer
 unsigned char bitmap[gridRows] = {
   B00100101,
-  B10001000
+  B10001000,
+  B10011000,
+  B00100001,
+  B00100101,
+  B10001000,
+  B1000010,
+  B01000110
 }; // Bits are traversed back-to-front
 
 void initSequencer() {
@@ -180,7 +186,7 @@ void renderSequencer() {
     currentTime += sequencerTickPeriod;
 
     // Dummy Step Cycle
-    if (stepTicker == 15) {
+    if (stepTicker == gridRows * gridColumns - 1) {
       stepTicker = 0;
     } else {
       stepTicker++;
