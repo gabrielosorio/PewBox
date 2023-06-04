@@ -15,7 +15,10 @@
 // gridColumns is used by drawGridFromBitmap to establish boundaries
 
 // Output indicator LED
-#define LED 6
+#define TRACK_0_LED 35
+#define TRACK_1_LED 36
+#define TRACK_2_LED 37
+#define TRACK_3_LED 38
 
 uint8_t stepTicker = 0;
 uint8_t cursorIndex = 0;
@@ -38,7 +41,10 @@ unsigned char bitmap[gridRows] = {
 }; // Bits are traversed back-to-front
 
 void initSequencer() {
-  pinMode(LED, OUTPUT);
+  pinMode(TRACK_0_LED, OUTPUT);
+  pinMode(TRACK_1_LED, OUTPUT);
+  pinMode(TRACK_2_LED, OUTPUT);
+  pinMode(TRACK_3_LED, OUTPUT);
 }
 
 void sequencerControlClockwiseHandler() {
@@ -70,15 +76,39 @@ void sequencerControlSwitchMomentaryHandler() {
 }
 
 // Sequencer event stepping on an enabled trigger
-void handleCurrentStepOn() {
-  // Dummy output LED to simulate trigger
-  digitalWrite(LED, HIGH);
+void handleStepOnForTrack(uint8_t track) {
+  switch(track) {
+    case 0:
+      digitalWrite(TRACK_0_LED, HIGH);
+      break;
+    case 1:
+      digitalWrite(TRACK_1_LED, HIGH);
+      break;
+    case 2:
+      digitalWrite(TRACK_2_LED, HIGH);
+      break;
+    case 3:
+      digitalWrite(TRACK_3_LED, HIGH);
+      break;
+  }
 }
 
 // Sequencer event stepping on a disabled trigger
-void handleCurrentStepOff() {
-  // Dummy output LED to simulate trigger
-  digitalWrite(LED, LOW);
+void handleStepOffForTrack(uint8_t track) {
+  switch(track) {
+    case 0:
+      digitalWrite(TRACK_0_LED, LOW);
+      break;
+    case 1:
+      digitalWrite(TRACK_1_LED, LOW);
+      break;
+    case 2:
+      digitalWrite(TRACK_2_LED, LOW);
+      break;
+    case 3:
+      digitalWrite(TRACK_3_LED, LOW);
+      break;
+  }
 }
 
 void drawCursor(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight, bool isActiveStep) {
@@ -166,12 +196,12 @@ void drawGridFromBitmap(uint8_t activeStepIndex, uint8_t cursorIndex, uint8_t *b
 
       if (currentlyRenderingBit == 1) {
         if (isActiveStep) {
-          handleCurrentStepOn();
+          handleStepOnForTrack(currentTrack);
         }
         drawMarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, isActiveStep, hasCursorOnStep);
       } else {
         if (isActiveStep) {
-          handleCurrentStepOff();
+          handleStepOffForTrack(currentTrack);
         }
         drawUnmarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, isActiveStep, hasCursorOnStep);
       }
