@@ -21,6 +21,8 @@ uint8_t stepTicker = 0;
 uint8_t cursorIndex = 0;
 const uint8_t gridRows = 2;
 const uint8_t gridColumns = 8;
+uint8_t cellSize = 7;
+uint8_t borderWidth = 1;
 
 // TODO: Review passing by reference vs by pointer
 unsigned char bitmap[gridRows] = {
@@ -73,9 +75,21 @@ void handleCurrentStepOff() {
 }
 
 void drawCursor(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight, bool isActiveStep) {
-  uint8_t cursorSize = 4;
-  uint8_t cursorX = x + cellWidth / 2 - cursorSize / 2;
-  uint8_t cursorY = y + cellHeight / 2 - cursorSize / 2;
+  uint8_t innerPadding = 0;
+  if (cellWidth >= 10) {
+    // Use double pixel inner padding for larger sizes
+    innerPadding = 2;
+  } else {
+    // Use single pixel inner padding for smaller sizes
+    innerPadding = 1;
+  }
+
+  // Cursor size is
+  // cell size - borders - paddings
+  uint8_t cursorSize = cellWidth - (borderWidth + innerPadding) * 2;
+  uint8_t cursorX = x + borderWidth + innerPadding;
+  uint8_t cursorY = y + borderWidth + innerPadding;
+
   display.fillRect(cursorX, cursorY, cursorSize, cursorSize, isActiveStep ? BLACK : WHITE);
 }
 
@@ -116,8 +130,6 @@ void drawMarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight,
 }
 
 void drawGridFromBitmap(uint8_t activeStepIndex, uint8_t cursorIndex, uint8_t *bitmap, uint8_t gridRows, uint8_t gridColumns) {  // Technically bitmap or just byte array?
-  uint8_t cellSize = 10;
-
   // TODO: Control layer (showing cursor position)
   // Only one active at a time, can infer from step number
 
