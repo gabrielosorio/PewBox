@@ -19,8 +19,9 @@
 
 uint8_t stepTicker = 0;
 uint8_t cursorIndex = 0;
-const uint8_t gridRows = 2;
-const uint8_t gridColumns = 8;
+const uint8_t gridRows = 2;     // TODO: Rename to describe bitmap and abstract
+const uint8_t gridColumns = 8;  //       from how they're displayed
+const uint8_t displayStepsPerRow = 16;
 uint8_t cellSize = 7;
 uint8_t borderWidth = 1;
 
@@ -138,11 +139,10 @@ void drawGridFromBitmap(uint8_t activeStepIndex, uint8_t cursorIndex, uint8_t *b
 
   // Go through the rows
   for (uint8_t row = 0; row < gridRows; row++) {
-    uint8_t cellOffsetY = row * cellSize;
-
     // Go through the columns in the row
     for (uint8_t column = 0; column < gridColumns; column++) {
-      uint8_t cellOffsetX = column * cellSize;
+      uint8_t cellOffsetY = (gridColumns * row + column) / displayStepsPerRow * cellSize; // Offset 1 Y after 16 steps
+      uint8_t cellOffsetX = ((gridColumns * row + column) % displayStepsPerRow) * cellSize; // Offset 1 X up until 16 steps
 
       byte currentBit = bitRead(bitmap[row], column);  // needs to pass *bitmap if not already a pointer
 
