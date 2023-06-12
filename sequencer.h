@@ -60,15 +60,9 @@ void sequencerControlCounterclockwiseHandler() {
 }
 
 void flipBitmapBitAtCursor() {
-  // TODO: Simplify check per row
-
-  if (cursorIndex < 8) {
-    // If on first row
-    bitmap[0] ^= 1UL << cursorIndex; // Flip bit at cursorIndex
-  } else {
-    // If on second row
-    bitmap[1] ^= 1UL << cursorIndex - 8; // Flip bit at cursorIndex
-  }
+  uint8_t bitmapRow = cursorIndex / gridColumns;
+  // Flip bit at relative cursor index for current bitmap row
+  bitmap[bitmapRow] ^= 1UL << (cursorIndex % gridColumns);
 }
 
 void sequencerControlSwitchMomentaryHandler() {
