@@ -43,7 +43,7 @@ AudioConnection patchCord3(filter1, dac1);
 void setup() {
   Serial.begin(9600);
   // Make sure serial is online before proceeding
-  while (!Serial) delay(100);
+  // while (!Serial) delay(100);
 
   if (!display.begin(0x3C)) {
     Serial.println("Unable to initialize OLED");
