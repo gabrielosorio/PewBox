@@ -28,7 +28,8 @@ const uint8_t displayStepsPerRow = 16;
 uint8_t cellSize = 7;
 uint8_t borderWidth = 1;
 
-uint8_t sequencerTickPeriod = 1000;
+uint8_t internalTempo = 120; // bpm
+uint8_t sequencerTickPeriod = 60000 / internalTempo; // bpm to milliseconds
 unsigned long currentTime = 0;
 uint8_t trigLength = 20;
 
