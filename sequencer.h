@@ -165,7 +165,7 @@ void drawMarkedCell(uint8_t x, uint8_t y, uint8_t cellWidth, uint8_t cellHeight,
   }
 }
 
-void drawGridFromBitmap(uint8_t activeStepIndex, uint8_t cursorIndex, uint8_t *bitmap, uint8_t gridRows, uint8_t gridColumns) {  // Technically bitmap or just byte array?
+void drawGridFromBitmap(uint8_t xPos, uint8_t yPos, uint8_t activeStepIndex, uint8_t cursorIndex, uint8_t *bitmap, uint8_t gridRows, uint8_t gridColumns) {  // Technically bitmap or just byte array?
   // TODO: Control layer (showing cursor position)
   // Only one active at a time, can infer from step number
 
@@ -176,8 +176,8 @@ void drawGridFromBitmap(uint8_t activeStepIndex, uint8_t cursorIndex, uint8_t *b
   for (uint8_t row = 0; row < gridRows; row++) {
     // Go through the columns in the row
     for (uint8_t column = 0; column < gridColumns; column++) {
-      uint8_t cellOffsetY = (gridColumns * row + column) / displayStepsPerRow * cellSize; // Offset 1 Y after 16 steps
-      uint8_t cellOffsetX = ((gridColumns * row + column) % displayStepsPerRow) * cellSize; // Offset 1 X up until 16 steps
+      uint8_t cellOffsetY = yPos + (gridColumns * row + column) / displayStepsPerRow * cellSize; // Offset 1 Y after 16 steps
+      uint8_t cellOffsetX = xPos + ((gridColumns * row + column) % displayStepsPerRow) * cellSize; // Offset 1 X up until 16 steps
 
       byte currentlyRenderingBit = bitRead(bitmap[row], column);  // needs to pass *bitmap if not already a pointer
 
@@ -218,7 +218,7 @@ void drawGridFromBitmap(uint8_t activeStepIndex, uint8_t cursorIndex, uint8_t *b
 // Put this in the run loop
 void renderSequencer() {
   display.clearDisplay();
-  drawGridFromBitmap(stepTicker, cursorIndex, bitmap, gridRows, gridColumns);
+  drawGridFromBitmap(8, 16, stepTicker, cursorIndex, bitmap, gridRows, gridColumns);
   display.display();
 
   // Delay using millis to avoid blocking UI between ticks
