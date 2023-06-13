@@ -28,6 +28,10 @@ const uint8_t displayStepsPerRow = 16;
 uint8_t cellSize = 7;
 uint8_t borderWidth = 1;
 
+uint8_t sequencerTickPeriod = 1000;
+unsigned long currentTime = 0;
+uint8_t trigLength = 20;
+
 // TODO: Review passing by reference vs by pointer
 unsigned char bitmap[gridRows] = {
   B00100101,
@@ -191,6 +195,12 @@ void drawGridFromBitmap(uint8_t activeStepIndex, uint8_t cursorIndex, uint8_t *b
       if (currentlyRenderingBit == 1) {
         if (isActiveStep) {
           handleStepOnForTrack(currentTrack);
+
+          // Shorten the gate into a trig
+          // Also avoids it staying open when a following adjacent trig is fired
+          if (millis() >= currentTime + trigLength) {
+            handleStepOffForTrack(currentTrack);
+          }
         }
         drawMarkedCell(cellOffsetX, cellOffsetY, cellSize, cellSize, isActiveStep, hasCursorOnStep);
       } else {
@@ -202,9 +212,6 @@ void drawGridFromBitmap(uint8_t activeStepIndex, uint8_t cursorIndex, uint8_t *b
     }
   }
 }
-
-uint8_t sequencerTickPeriod = 1000;
-unsigned long currentTime = 0;
 
 // Main sequencer entry point
 // Put this in the run loop
