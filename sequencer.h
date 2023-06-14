@@ -214,10 +214,19 @@ void drawGridFromBitmap(uint8_t xPos, uint8_t yPos, uint8_t activeStepIndex, uin
   }
 }
 
+void displayTempo(uint8_t x, uint8_t y) {
+  display.setTextColor(WHITE);
+  display.setTextSize(1);
+  display.setCursor(x, y);
+  display.print(internalTempo);
+  display.println(" BPM");
+}
+
 // Main sequencer entry point
 // Put this in the run loop
 void renderSequencer() {
   display.clearDisplay();
+  displayTempo(80, 4);
   drawGridFromBitmap(8, 16, stepTicker, cursorIndex, bitmap, gridRows, gridColumns);
   display.display();
 
