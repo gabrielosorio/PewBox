@@ -56,7 +56,7 @@ void initMenu() {
 
 void highlightSelectedMenuItemLabel(uint8_t renderingMenuItemIndex) {
   // If we've stepped into the values of an item, skip
-  if (encoderToggled) {
+  if (encoder.toggled()) {
     return;
   }
 
@@ -70,7 +70,7 @@ void highlightSelectedMenuItemLabel(uint8_t renderingMenuItemIndex) {
 
 void highlightSelectedMenuItemValue(uint8_t renderingMenuItemIndex) {
   // If we have not stepped into the values of an item, skip
-  if (!encoderToggled) {
+  if (!encoder.toggled()) {
     return;
   }
 
@@ -82,9 +82,8 @@ void highlightSelectedMenuItemValue(uint8_t renderingMenuItemIndex) {
   }
 }
 
-void renderMenu(uint8_t nextMenuItemIndex) {
-  activeMenuItemIndex = nextMenuItemIndex;
-  
+void renderMenu() {
+  display.clearDisplay();
   display.setCursor(0, 0);
   display.setTextSize(1);
 
@@ -100,4 +99,6 @@ void renderMenu(uint8_t nextMenuItemIndex) {
     highlightSelectedMenuItemValue(i);
     display.println(menuItems[i].value);
   }
+
+  display.display();
 }

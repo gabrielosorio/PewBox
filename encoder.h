@@ -1,112 +1,60 @@
 // Rotary Encoder
-// Still tightly coupled to the menu
-// very little encapsulation and very order dependent
 
-// # Pins:
+// * Pins:
 // Defined in PewBox.ino
 // #define ENCODER_INPUT_CLK 2
 // #define ENCODER_INPUT_DT 3
 // #define ENCODER_INPUT_SW 4
 
-// # Control variables:
-// encoderToggled
-
-// # Setup functions:
+// * Setup functions:
 // initRotaryEncoder();
 
-// # Loop functions:
+// * Handlers:
 //
-// Keep encoder button in sync
-// readEncoderSwitch();
+// Pass handler function to be invoked every time
+// the encoder switch is pressed or released
+// readEncoderSwitch(*foobarControlSwitchMomentaryHandler);
 //
 // Pass handler functions to be invoked every time
 // the encoder latches in each respective direction
 // readEncoderRotation(
-//   *menuControlClockwiseHandler,
-//   *menuControlCounterclockwiseHandler
+//   *foobarControlClockwiseHandler,
+//   *foobarControlCounterclockwiseHandler
 // );
 
-// Handlers:
-// Invoked every time the encoder latches in each
-// respective direction or the switch is clicked
-//
-// void menuControlCounterclockwiseHandler()
-// void menuControlClockwiseHandler()
-// void readEncoderSwitchMomentary()
+#ifndef ENCODER_H
+#define ENCODER_H
 
-int encoderCurrentCLK;
-int encoderPreviousCLK;
-int encoderCurrentSW;
-int encoderPreviousSW;
-bool encoderToggled = false;
+#include <Arduino.h>
 
-void initRotaryEncoder() {
-  // Init Rotary Encoder
-  pinMode(ENCODER_INPUT_CLK, INPUT);
-  pinMode(ENCODER_INPUT_DT, INPUT);
-  pinMode(ENCODER_INPUT_SW, INPUT);
-  encoderPreviousCLK = digitalRead(ENCODER_INPUT_CLK); // Initial CLK state
-  encoderPreviousSW = digitalRead(ENCODER_INPUT_SW); // Initial SW state
-}
+class Encoder {
+public:
+  Encoder(int clkPin, int dtPin, int swPin);
+  ~Encoder();
 
-void readEncoderSwitch(void (*encoderSwitchMomentaryHandler)()) {
-  encoderCurrentSW = digitalRead(ENCODER_INPUT_SW);
+  int initRotaryEncoder();
 
-  // If the SW didn't change, then the encoder wasn't pressed or released. Do nothing.
-  if (encoderCurrentSW == encoderPreviousSW) {
-    return;
-  }
+  bool toggled();
+  bool momentaryOn();
 
-  if (encoderCurrentSW == LOW) {
-    Serial.println("Encoder Pressed");
-    encoderToggled = !encoderToggled;
-    // Trigger a momentary handler if one is supplied
-    encoderSwitchMomentaryHandler();
-  }
+  void readEncoderRotation(
+    void (*clockwiseHandler)(),
+    void (*counterclockwiseHandler)()
+  );
+  void readEncoderSwitch(void (*encoderSwitchMomentaryHandler)());
+  void readEncoderSwitchMomentary(void (*encoderSwitchMomentaryHandler)());
 
-  if (encoderCurrentSW == HIGH) {
-    Serial.println("Encoder Released");
-  }
+private:
+  unsigned int clk_pin;
+  unsigned int dt_pin;
+  unsigned int sw_pin;
+  int encoderCurrentCLK;
+  int encoderPreviousCLK;
+  int encoderCurrentSW;
+  int encoderPreviousSW;
 
-  encoderPreviousSW = encoderCurrentSW;
-}
+  bool currentlyToggled = false;
+  bool currentlyMomentaryOn = false;
+};
 
-bool encoderMomentaryOn = false;
-
-// TODO: Make function argument optional
-void readEncoderSwitchMomentary(void (*encoderSwitchMomentaryHandler)()) {
-  // If the SW didn't change, then the encoder wasn't pressed or released. Do nothing.
-  if (encoderCurrentSW == encoderPreviousSW) {
-    return;
-  }
-
-  if (encoderCurrentSW == LOW) {
-    Serial.println("Encoder Pressed");
-    encoderSwitchMomentaryHandler();
-  }
-}
-
-void readEncoderRotation(void (*clockwiseHandler)(), void (*counterclockwiseHandler)()) {
-  encoderCurrentCLK = digitalRead(ENCODER_INPUT_CLK);
-
-  // If the CLK didn't change, then the encoder didn't move. Do nothing.
-  if (encoderCurrentCLK == encoderPreviousCLK) {
-    return;
-  }
-
-  encoderPreviousCLK = encoderCurrentCLK;
-
-  // Extremely basic debounce.
-  // Current encoder only latches on 1 and reads 0 when not latched.
-  // Only compute rotation when the encoder latches.
-  if (encoderCurrentCLK == 0) {
-    return;
-  }
-
-  // Both CLK and DT are HIGH when rotating counterclockwise
-  if (encoderCurrentCLK == digitalRead(ENCODER_INPUT_DT)) { // Counterclockwise
-    counterclockwiseHandler();
-  } else { // Clockwise
-    clockwiseHandler();
-  }
-}
+#endif // ENCODER_H

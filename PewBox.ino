@@ -17,12 +17,9 @@ Adafruit_SSD1305 display(128, 64, &SPI, OLED_DC, OLED_RESET, OLED_CS, 1000000UL)
 #define ENCODER_INPUT_DT 3
 #define ENCODER_INPUT_SW 4
 
-// Rotary Encoder local control values
-int encoderValue = 0;
-int encoderValueMin = 0;              // Don't go negative
-int encoderValueMax = MENU_SIZE - 1;  // 0-based count, as opposed to the 1-based MENU_SIZE
-
 #include "encoder.h"
+Encoder encoder(ENCODER_INPUT_CLK, ENCODER_INPUT_DT, ENCODER_INPUT_SW);
+
 #include "menu.h"
 #include "sequencer.h"
 
@@ -50,7 +47,7 @@ void setup() {
     while (1) yield();
   }
 
-  initRotaryEncoder();
+  encoder.initRotaryEncoder();
 
   initSequencer();
 
@@ -66,34 +63,25 @@ void setup() {
 
   // Audio Setup
   // initAudioComponents();
-
-  // display.display();
 }
 
 void loop() {
-  readEncoderSwitch(*sequencerControlSwitchMomentaryHandler);
-  // readEncoderRotation(
-  //   *menuControlClockwiseHandler,
-  //   *menuControlCounterclockwiseHandler);
-
-  // Sequencer-specific
-  // TODO: Move to swappable "app" object,
-  //       that can be selectable from the menu and
-  //       declares (overrides) their own event handlers
-  readEncoderRotation(
+  // Sequencer:
+  encoder.readEncoderSwitch(*sequencerControlSwitchMomentaryHandler);
+  encoder.readEncoderRotation(
     *sequencerControlClockwiseHandler,
     *sequencerControlCounterclockwiseHandler);
+  renderSequencer();
 
-  // Read selected meenu item from encoder
-  // renderMenu(encoderValue);
-
-  // display.display();
-  // display.clearDisplay();
+  // Menu:
+  // encoder.readEncoderSwitch(*menuControlSwitchMomentaryHandler);
+  // encoder.readEncoderRotation(
+  //   *menuControlClockwiseHandler,
+  //   *menuControlCounterclockwiseHandler);
+  // renderMenu();
 
   // Audio
   // renderAudioComponentsFromMenu();
-
-  renderSequencer();
 }
 
 void displayBootScreen() {
@@ -138,13 +126,13 @@ void renderAudioComponentsFromMenu() {
 // depending on which handler you pass
 void menuControlClockwiseHandler() {
   // If we've stepped into the values of an item, increase the current value
-  if (encoderToggled) {
+  if (encoder.toggled()) {
     if (menuItems[activeMenuItemIndex].value < menuItems[activeMenuItemIndex].maxValue) {
       menuItems[activeMenuItemIndex].value++;
     }
-  } else {  // Otherwise keep scrolling through the menu list
-    if (encoderValue < encoderValueMax) {
-      encoderValue++;  // Scroll to the next menu item
+  } else { // Otherwise keep scrolling through the menu list
+    if (activeMenuItemIndex < MENU_SIZE - 1) {
+      activeMenuItemIndex++; // Scroll to the next menu item
     }
   }
 }
@@ -154,13 +142,17 @@ void menuControlClockwiseHandler() {
 // depending on which handler you pass
 void menuControlCounterclockwiseHandler() {
   // If we've stepped into the values of an item, decrease the current value
-  if (encoderToggled) {
+  if (encoder.toggled()) {
     if (menuItems[activeMenuItemIndex].value > menuItems[activeMenuItemIndex].minValue) {
       menuItems[activeMenuItemIndex].value--;
     }
   } else {  // Otherwise keep scrolling through the menu list
-    if (encoderValue > encoderValueMin) {
-      encoderValue--;  // Scroll to the previous menu item
+    if (activeMenuItemIndex > 0) {
+      activeMenuItemIndex--;  // Scroll to the previous menu item
     }
   }
+}
+
+void menuControlSwitchMomentaryHandler() {
+  // No custom action
 }
