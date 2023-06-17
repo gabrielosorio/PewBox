@@ -3,7 +3,7 @@
 
 Firmware for a Teensy-based musical thingamajig made from the ground up.
 
-![DSCF0709-small](https://user-images.githubusercontent.com/1136262/174444239-a10259ce-7e7f-48be-9863-ccbf2bd6e71a.jpg)
+![Splash Screen Side](/hardware/splash-screen-side.jpg?raw=true "Splash Screen Side")
 
 ### Sequencer App
 ![Sequencer Breadboard Side](/hardware/sequencer-side.jpg?raw=true "Sequencer Breadboard Side")
@@ -22,9 +22,9 @@ Firmware for a Teensy-based musical thingamajig made from the ground up.
 
 A box in the most liberal sense.
 
-![DSCF0728](https://user-images.githubusercontent.com/1136262/174444248-f159da2a-8561-46fb-9b1b-06cd3d48ebbf.JPG)
+![Splash Screen Top](/hardware/splash-screen-top.jpg?raw=true "Splash Screen Top")
 
-![DSCF0725](https://user-images.githubusercontent.com/1136262/174444252-a2ef6696-1c33-4e25-b98e-ddfdd0d93711.JPG)
+![Oscillator Menu Top](/hardware/oscillator-menu-top.jpg?raw=true "Oscillator Menu Top")
 
 ![Sequencer Breadboard Top](/hardware/sequencer-top.jpg?raw=true "Sequencer Breadboard Top")
 
