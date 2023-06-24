@@ -1,5 +1,10 @@
 #include <SPI.h>
 #include <Adafruit_SSD1305.h>
+#include <MIDI.h>
+
+// Macro to setup the MIDI Library
+// Uses Serial1, pin 0 (RX1) and 1 (TX1) on the Teensy 3.6
+MIDI_CREATE_DEFAULT_INSTANCE();
 
 // OLED SPI
 #define OLED_CS 10
@@ -42,6 +47,8 @@ void setup() {
   // Make sure serial is online before proceeding
   // while (!Serial) delay(100);
 
+  MIDI.begin(MIDI_CHANNEL_OMNI);
+
   if (!display.begin(0x3C)) {
     Serial.println("Unable to initialize OLED");
     while (1) yield();
@@ -50,6 +57,7 @@ void setup() {
   encoder.initRotaryEncoder();
 
   initSequencer();
+  sequencerPlay();
 
   // Init Done
   display.display();  // show splashscreen
@@ -66,6 +74,31 @@ void setup() {
 }
 
 void loop() {
+  if (MIDI.read()) {
+    switch (MIDI.getType()) {
+      case midi::Start:
+        Serial.println("Start");
+        sequencerPlay();
+        break;
+      case midi::Continue:
+        Serial.println("Continue");
+        sequencerPlay();
+        break;
+      case midi::Stop:
+        Serial.println("Stop");
+        sequencerPause();
+        break;
+      case midi::NoteOn:
+        Serial.println("Note On");
+        break;
+      case midi::NoteOff:
+        Serial.println("Note Off");
+        break;
+      default:
+        break;
+    }
+  }
+
   // Sequencer:
   encoder.readEncoderSwitch(*sequencerControlSwitchMomentaryHandler);
   encoder.readEncoderRotation(
