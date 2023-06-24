@@ -20,6 +20,7 @@
 #define TRACK_2_LED 37
 #define TRACK_3_LED 38
 
+bool sequencerRunning = false;
 uint8_t stepTicker = 0;
 uint8_t cursorIndex = 0;
 const uint8_t gridRows = 8;     // TODO: Rename to describe bitmap and abstract
@@ -50,6 +51,14 @@ void initSequencer() {
   pinMode(TRACK_1_LED, OUTPUT);
   pinMode(TRACK_2_LED, OUTPUT);
   pinMode(TRACK_3_LED, OUTPUT);
+}
+
+void sequencerPlay() {
+  sequencerRunning = true;
+}
+
+void sequencerPause() {
+  sequencerRunning = false;
 }
 
 void sequencerControlClockwiseHandler() {
@@ -234,11 +243,13 @@ void renderSequencer() {
   if (millis() >= currentTime + sequencerTickPeriod) {
     currentTime += sequencerTickPeriod;
 
-    // Dummy Step Cycle
-    if (stepTicker == displayStepsPerRow - 1) {
-      stepTicker = 0;
-    } else {
-      stepTicker++;
+    if (sequencerRunning) {
+      // Dummy Step Cycle
+      if (stepTicker == displayStepsPerRow - 1) {
+        stepTicker = 0;
+      } else {
+        stepTicker++;
+      }
     }
   }
 }

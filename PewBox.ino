@@ -57,6 +57,7 @@ void setup() {
   encoder.initRotaryEncoder();
 
   initSequencer();
+  sequencerPlay();
 
   // Init Done
   display.display();  // show splashscreen
@@ -76,13 +77,23 @@ void loop() {
   if (MIDI.read()) {
     switch (MIDI.getType()) {
       case midi::Start:
-        Serial.println("Play");
+        Serial.println("Start");
+        sequencerPlay();
+        break;
+      case midi::Continue:
+        Serial.println("Continue");
+        sequencerPlay();
+        break;
       case midi::Stop:
         Serial.println("Stop");
+        sequencerPause();
+        break;
       case midi::NoteOn:
         Serial.println("Note On");
+        break;
       case midi::NoteOff:
         Serial.println("Note Off");
+        break;
       default:
         break;
     }
