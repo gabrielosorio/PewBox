@@ -88,6 +88,11 @@ void loop() {
         Serial.println("Stop");
         sequencerPause();
         break;
+      case midi::ControlChange:
+        if (MIDI.getData1() == 123) {
+          Serial.println("[Channel Mode Message] All Notes Off");
+          sequencerPause();
+        }
       case midi::NoteOn:
         Serial.println("Note On");
         break;
