@@ -34,6 +34,9 @@ uint8_t sequencerTickPeriod = 60000 / internalTempo; // bpm to milliseconds
 unsigned long currentTime = 0;
 uint8_t trigLength = 20;
 
+// External MIDI
+uint8_t midiClockCount = 0;
+
 // TODO: Review passing by reference vs by pointer
 unsigned char bitmap[gridRows] = {
   B00100101,
@@ -231,6 +234,18 @@ void displayTempo(uint8_t x, uint8_t y) {
   display.println(" BPM");
 }
 
+void advanceSequencer() {
+  if (!sequencerRunning) {
+    return;
+  }
+
+  if (stepTicker == displayStepsPerRow - 1) {
+    stepTicker = 0;
+  } else {
+    stepTicker++;
+  }
+}
+
 // Main sequencer entry point
 // Put this in the run loop
 void renderSequencer() {
@@ -239,17 +254,11 @@ void renderSequencer() {
   drawGridFromBitmap(8, 16, stepTicker, cursorIndex, bitmap, gridRows, gridColumns);
   display.display();
 
+  // Dummy Step Cycle
   // Delay using millis to avoid blocking UI between ticks
-  if (millis() >= currentTime + sequencerTickPeriod) {
-    currentTime += sequencerTickPeriod;
+  // if (millis() >= currentTime + sequencerTickPeriod) {
+  //   currentTime += sequencerTickPeriod;
 
-    if (sequencerRunning) {
-      // Dummy Step Cycle
-      if (stepTicker == displayStepsPerRow - 1) {
-        stepTicker = 0;
-      } else {
-        stepTicker++;
-      }
-    }
-  }
+  //   advanceSequencer();
+  // }
 }
