@@ -109,13 +109,7 @@ void loop() {
         Serial.println("Note Off");
         break;
       case midi::Clock:
-        // MIDI specifies 24 clocks per quarter note
-        if (midiClockCount < 24) {
-          midiClockCount++;
-        } else {
-          advanceSequencer();
-          midiClockCount = 0;
-        }
+        externalClockHandler();
         break;
       default:
         break;

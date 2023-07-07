@@ -21,6 +21,8 @@
 #define TRACK_3_LED 38
 
 bool sequencerRunning = false;
+bool externalClockEnabled = false;
+
 uint8_t stepTicker = 0;
 uint8_t cursorIndex = 0;
 const uint8_t gridRows = 8;     // TODO: Rename to describe bitmap and abstract
@@ -88,6 +90,10 @@ void sequencerControlSwitchMomentaryHandler() {
 
 // Sequencer event stepping on an enabled trigger
 void handleStepOnForTrack(uint8_t track) {
+  if (!sequencerRunning) {
+    return;
+  }
+
   switch(track) {
     case 0:
       digitalWrite(TRACK_0_LED, HIGH);
@@ -106,6 +112,10 @@ void handleStepOnForTrack(uint8_t track) {
 
 // Sequencer event stepping on a disabled trigger
 void handleStepOffForTrack(uint8_t track) {
+  if (!sequencerRunning) {
+    return;
+  }
+
   switch(track) {
     case 0:
       digitalWrite(TRACK_0_LED, LOW);
@@ -246,6 +256,20 @@ void advanceSequencer() {
   }
 }
 
+void externalClockHandler() {
+  if (!externalClockEnabled) {
+    return;
+  }
+
+  // MIDI specifies 24 clocks per quarter note
+  if (midiClockCount < 24) {
+    midiClockCount++;
+  } else {
+    advanceSequencer();
+    midiClockCount = 0;
+  }
+}
+
 // Main sequencer entry point
 // Put this in the run loop
 void renderSequencer() {
@@ -254,11 +278,13 @@ void renderSequencer() {
   drawGridFromBitmap(8, 16, stepTicker, cursorIndex, bitmap, gridRows, gridColumns);
   display.display();
 
-  // Dummy Step Cycle
-  // Delay using millis to avoid blocking UI between ticks
-  // if (millis() >= currentTime + sequencerTickPeriod) {
-  //   currentTime += sequencerTickPeriod;
+  if (!externalClockEnabled) {
+    // Dummy Step Cycle
+    // Delay using millis to avoid blocking UI between ticks
+    if (millis() >= currentTime + sequencerTickPeriod) {
+      currentTime += sequencerTickPeriod;
 
-  //   advanceSequencer();
-  // }
+      advanceSequencer();
+    }
+  }
 }
