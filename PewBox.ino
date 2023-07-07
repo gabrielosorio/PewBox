@@ -75,6 +75,14 @@ void setup() {
 
 void loop() {
   if (MIDI.read()) {
+    if (MIDI.getType() != 248) {
+      Serial.println(MIDI.getType());
+      Serial.print("Data1: ");
+      Serial.println(MIDI.getData1());
+      Serial.print("Data2: ");
+      Serial.println(MIDI.getData2());
+    }
+
     switch (MIDI.getType()) {
       case midi::Start:
         Serial.println("Start");
@@ -93,11 +101,15 @@ void loop() {
           Serial.println("[Channel Mode Message] All Notes Off");
           sequencerPause();
         }
+        break;
       case midi::NoteOn:
         Serial.println("Note On");
         break;
       case midi::NoteOff:
         Serial.println("Note Off");
+        break;
+      case midi::Clock:
+        externalClockHandler();
         break;
       default:
         break;

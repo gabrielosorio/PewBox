@@ -21,6 +21,7 @@
 #define TRACK_3_LED 38
 
 bool sequencerRunning = false;
+
 uint8_t stepTicker = 0;
 uint8_t cursorIndex = 0;
 const uint8_t gridRows = 8;     // TODO: Rename to describe bitmap and abstract
@@ -33,6 +34,12 @@ uint8_t internalTempo = 120; // bpm
 uint8_t sequencerTickPeriod = 60000 / internalTempo; // bpm to milliseconds
 unsigned long currentTime = 0;
 uint8_t trigLength = 20;
+
+// External MIDI
+bool externalClockEnabled = false;
+uint8_t midiClockCount = 0;
+int lastMidiClockAt = 0;
+int currentMidiClockAt = 0;
 
 // TODO: Review passing by reference vs by pointer
 unsigned char bitmap[gridRows] = {
@@ -85,6 +92,10 @@ void sequencerControlSwitchMomentaryHandler() {
 
 // Sequencer event stepping on an enabled trigger
 void handleStepOnForTrack(uint8_t track) {
+  if (!sequencerRunning) {
+    return;
+  }
+
   switch(track) {
     case 0:
       digitalWrite(TRACK_0_LED, HIGH);
@@ -103,6 +114,10 @@ void handleStepOnForTrack(uint8_t track) {
 
 // Sequencer event stepping on a disabled trigger
 void handleStepOffForTrack(uint8_t track) {
+  if (!sequencerRunning) {
+    return;
+  }
+
   switch(track) {
     case 0:
       digitalWrite(TRACK_0_LED, LOW);
@@ -231,6 +246,39 @@ void displayTempo(uint8_t x, uint8_t y) {
   display.println(" BPM");
 }
 
+void advanceSequencer() {
+  if (!sequencerRunning) {
+    return;
+  }
+
+  if (stepTicker == displayStepsPerRow - 1) {
+    stepTicker = 0;
+  } else {
+    stepTicker++;
+  }
+}
+
+void externalClockHandler() {
+  if (!externalClockEnabled) {
+    return;
+  }
+
+
+  // MIDI specifies 24 clocks per quarter note
+  if (midiClockCount < 24) {
+    midiClockCount++;
+  } else {
+    advanceSequencer();
+    midiClockCount = 0;
+
+    // Infer tempo from clock interval
+    // TODO: Needs to be stabilized and averaged
+    currentMidiClockAt = millis();
+    internalTempo = 60000 / (currentMidiClockAt - lastMidiClockAt);
+    lastMidiClockAt = currentMidiClockAt;
+  }
+}
+
 // Main sequencer entry point
 // Put this in the run loop
 void renderSequencer() {
@@ -239,17 +287,13 @@ void renderSequencer() {
   drawGridFromBitmap(8, 16, stepTicker, cursorIndex, bitmap, gridRows, gridColumns);
   display.display();
 
-  // Delay using millis to avoid blocking UI between ticks
-  if (millis() >= currentTime + sequencerTickPeriod) {
-    currentTime += sequencerTickPeriod;
+  if (!externalClockEnabled) {
+    // Dummy Step Cycle
+    // Delay using millis to avoid blocking UI between ticks
+    if (millis() >= currentTime + sequencerTickPeriod) {
+      currentTime += sequencerTickPeriod;
 
-    if (sequencerRunning) {
-      // Dummy Step Cycle
-      if (stepTicker == displayStepsPerRow - 1) {
-        stepTicker = 0;
-      } else {
-        stepTicker++;
-      }
+      advanceSequencer();
     }
   }
 }
