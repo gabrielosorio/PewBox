@@ -21,7 +21,6 @@
 #define TRACK_3_LED 38
 
 bool sequencerRunning = false;
-bool externalClockEnabled = false;
 
 uint8_t stepTicker = 0;
 uint8_t cursorIndex = 0;
@@ -37,7 +36,10 @@ unsigned long currentTime = 0;
 uint8_t trigLength = 20;
 
 // External MIDI
+bool externalClockEnabled = false;
 uint8_t midiClockCount = 0;
+int lastMidiClockAt = 0;
+int currentMidiClockAt = 0;
 
 // TODO: Review passing by reference vs by pointer
 unsigned char bitmap[gridRows] = {
@@ -261,12 +263,19 @@ void externalClockHandler() {
     return;
   }
 
+
   // MIDI specifies 24 clocks per quarter note
   if (midiClockCount < 24) {
     midiClockCount++;
   } else {
     advanceSequencer();
     midiClockCount = 0;
+
+    // Infer tempo from clock interval
+    // TODO: Needs to be stabilized and averaged
+    currentMidiClockAt = millis();
+    internalTempo = 60000 / (currentMidiClockAt - lastMidiClockAt);
+    lastMidiClockAt = currentMidiClockAt;
   }
 }
 
