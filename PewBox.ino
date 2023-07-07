@@ -1,6 +1,6 @@
 #include <SPI.h>
 #include <Adafruit_SSD1305.h>
-#include <MIDI.h>
+#include <MIDI.h> // Arduino MIDI Library
 
 // Macro to setup the MIDI Library
 // Uses Serial1, pin 0 (RX1) and 1 (TX1) on the Teensy 3.6
@@ -27,6 +27,7 @@ Encoder encoder(ENCODER_INPUT_CLK, ENCODER_INPUT_DT, ENCODER_INPUT_SW);
 
 #include "menu.h"
 #include "sequencer.h"
+#include "midi.h" // Internal MIDI handler
 
 // Teensy Audio Library
 #include <Audio.h>
@@ -74,47 +75,7 @@ void setup() {
 }
 
 void loop() {
-  if (MIDI.read()) {
-    if (MIDI.getType() != 248) {
-      Serial.println(MIDI.getType());
-      Serial.print("Data1: ");
-      Serial.println(MIDI.getData1());
-      Serial.print("Data2: ");
-      Serial.println(MIDI.getData2());
-    }
-
-    switch (MIDI.getType()) {
-      case midi::Start:
-        Serial.println("Start");
-        sequencerPlay();
-        break;
-      case midi::Continue:
-        Serial.println("Continue");
-        sequencerPlay();
-        break;
-      case midi::Stop:
-        Serial.println("Stop");
-        sequencerPause();
-        break;
-      case midi::ControlChange:
-        if (MIDI.getData1() == 123) {
-          Serial.println("[Channel Mode Message] All Notes Off");
-          sequencerPause();
-        }
-        break;
-      case midi::NoteOn:
-        Serial.println("Note On");
-        break;
-      case midi::NoteOff:
-        Serial.println("Note Off");
-        break;
-      case midi::Clock:
-        externalClockHandler();
-        break;
-      default:
-        break;
-    }
-  }
+  readMidi();
 
   // Sequencer:
   encoder.readEncoderSwitch(*sequencerControlSwitchMomentaryHandler);
