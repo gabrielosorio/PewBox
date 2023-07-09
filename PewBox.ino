@@ -57,8 +57,8 @@ void setup() {
 
   encoder.initRotaryEncoder();
 
-  initSequencer();
-  sequencerPlay();
+  // initSequencer();
+  // sequencerPlay();
 
   // Init Done
   display.display();  // show splashscreen
@@ -68,31 +68,31 @@ void setup() {
   displayBootScreen();
 
   // Menu Setup
-  // initMenu();
+  initMenu();
 
   // Audio Setup
-  // initAudioComponents();
+  initAudioComponents();
 }
 
 void loop() {
   readMidi();
 
   // Sequencer:
-  encoder.readEncoderSwitch(*sequencerControlSwitchMomentaryHandler);
-  encoder.readEncoderRotation(
-    *sequencerControlClockwiseHandler,
-    *sequencerControlCounterclockwiseHandler);
-  renderSequencer();
+  // encoder.readEncoderSwitch(*sequencerControlSwitchMomentaryHandler);
+  // encoder.readEncoderRotation(
+  //   *sequencerControlClockwiseHandler,
+  //   *sequencerControlCounterclockwiseHandler);
+  // renderSequencer();
 
   // Menu:
-  // encoder.readEncoderSwitch(*menuControlSwitchMomentaryHandler);
-  // encoder.readEncoderRotation(
-  //   *menuControlClockwiseHandler,
-  //   *menuControlCounterclockwiseHandler);
-  // renderMenu();
+  encoder.readEncoderSwitch(*menuControlSwitchMomentaryHandler);
+  encoder.readEncoderRotation(
+    *menuControlClockwiseHandler,
+    *menuControlCounterclockwiseHandler);
+  renderMenu();
 
   // Audio
-  // renderAudioComponentsFromMenu();
+  renderAudioComponentsFromMenu();
 }
 
 void displayBootScreen() {
