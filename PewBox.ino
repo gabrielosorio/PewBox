@@ -14,9 +14,6 @@ MIDI_CREATE_DEFAULT_INSTANCE();
 // hardware SPI - use 7Mhz (7000000UL) or lower because the screen is rated for 4MHz, or it will remain blank!
 Adafruit_SSD1305 display(128, 64, &SPI, OLED_DC, OLED_RESET, OLED_CS, 1000000UL);
 
-// Main Menu
-#define MENU_SIZE 5  // 1-based count (one blank) - must be a constant/macro to be used to define an array
-
 // Rotary Encoder Pins
 #define ENCODER_INPUT_CLK 2
 #define ENCODER_INPUT_DT 3
@@ -26,6 +23,8 @@ Adafruit_SSD1305 display(128, 64, &SPI, OLED_DC, OLED_RESET, OLED_CS, 1000000UL)
 Encoder encoder(ENCODER_INPUT_CLK, ENCODER_INPUT_DT, ENCODER_INPUT_SW);
 
 #include "menu.h"
+Menu menu(display);
+
 #include "sequencer.h"
 #include "midi.h" // Internal MIDI handler
 
@@ -68,7 +67,7 @@ void setup() {
   displayBootScreen();
 
   // Menu Setup
-  initMenu();
+  menu.initMenu();
 
   // Audio Setup
   initAudioComponents();
@@ -89,7 +88,7 @@ void loop() {
   encoder.readEncoderRotation(
     *menuControlClockwiseHandler,
     *menuControlCounterclockwiseHandler);
-  renderMenu();
+  menu.renderMenu();
 
   // Audio
   renderAudioComponentsFromMenu();
@@ -124,11 +123,11 @@ void initAudioComponents() {
 
 void renderAudioComponentsFromMenu() {
   AudioNoInterrupts();
-  waveform1.frequency(menuItems[0].value);
-  waveform1.amplitude(menuItems[1].value);
-  filter1.frequency(menuItems[2].value * 100);  // Multiplying frequency for ease of use
-  filter_lfo.frequency(menuItems[3].value);
-  filter_lfo.amplitude(menuItems[4].value);
+  waveform1.frequency(menu.menuItems[0].value);
+  waveform1.amplitude(menu.menuItems[1].value);
+  filter1.frequency(menu.menuItems[2].value * 100);  // Multiplying frequency for ease of use
+  filter_lfo.frequency(menu.menuItems[3].value);
+  filter_lfo.amplitude(menu.menuItems[4].value);
   AudioInterrupts();
 }
 
@@ -138,11 +137,11 @@ void renderAudioComponentsFromMenu() {
 void menuControlClockwiseHandler() {
   // If we've stepped into the values of an item, increase the current value
   if (encoder.toggled()) {
-    if (menuItems[activeMenuItemIndex].value < menuItems[activeMenuItemIndex].maxValue) {
-      menuItems[activeMenuItemIndex].value++;
+    if (menu.menuItems[activeMenuItemIndex].value < menu.menuItems[activeMenuItemIndex].maxValue) {
+      menu.menuItems[activeMenuItemIndex].value++;
     }
   } else { // Otherwise keep scrolling through the menu list
-    if (activeMenuItemIndex < MENU_SIZE - 1) {
+    if (activeMenuItemIndex < menu.menuSize - 1) {
       activeMenuItemIndex++; // Scroll to the next menu item
     }
   }
@@ -154,8 +153,8 @@ void menuControlClockwiseHandler() {
 void menuControlCounterclockwiseHandler() {
   // If we've stepped into the values of an item, decrease the current value
   if (encoder.toggled()) {
-    if (menuItems[activeMenuItemIndex].value > menuItems[activeMenuItemIndex].minValue) {
-      menuItems[activeMenuItemIndex].value--;
+    if (menu.menuItems[activeMenuItemIndex].value > menu.menuItems[activeMenuItemIndex].minValue) {
+      menu.menuItems[activeMenuItemIndex].value--;
     }
   } else {  // Otherwise keep scrolling through the menu list
     if (activeMenuItemIndex > 0) {
@@ -165,5 +164,6 @@ void menuControlCounterclockwiseHandler() {
 }
 
 void menuControlSwitchMomentaryHandler() {
-  // No custom action
+  // Toggles between selecting menu labels, or menu values
+  menu.toggleSelectedLevel();
 }
